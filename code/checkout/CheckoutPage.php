@@ -45,7 +45,7 @@ class CheckoutPage extends Page {
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->addFieldsToTab('Root.Main', array(
-			HtmlEditorField::create('PurchaseComplete', 'Purchase Complete', 4)
+			ElEditorField::create('PurchaseComplete', 'Purchase Complete', 4)
 				->setDescription("This message is included in reciept email, ".
 								"after the customer submits the checkout")
 		),'Metadata');
