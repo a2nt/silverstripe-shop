@@ -295,7 +295,7 @@ class ShoppingCart_Controller extends Controller{
 		'$Action/$Buyable/$ID' => 'handleAction',
 	);
 	
-	static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'add',
 		'additem',
 		'remove',
