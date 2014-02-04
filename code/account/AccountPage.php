@@ -5,12 +5,20 @@
  *
  * @package shop
  */
-class AccountPage extends Page {
+class AccountPage extends BasicPage {
 
-	private static $icon = 'shop/images/icons/account';
-
-	public function canCreate($member = null) {
-		return !self::get()->exists();
+	private static $icon = 'background-image:url(zz-basic/backend/img/treeicons/account-file.png);';
+	
+	private static $defaults = array(
+		'ShowInMenus' => 0,
+		'ShowInSearch' => 0,
+	);
+	
+	public function canCreate($member = NULL) {
+		if(AccountPage::get()->count()>0){
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -21,38 +29,45 @@ class AccountPage extends Page {
 		$page = self::get_if_account_page_exists();
 		return ($urlSegment) ? $page->URLSegment : $page->Link();
 	}
-
 	/**
-	 * Return a link to view the order on the account page.
-	 *
-	 * @param int|string $orderID ID of the order
+	 * Returns the title of the account page on this site
 	 * @param boolean $urlSegment Return the URLSegment only
 	 */
-	public static function get_order_link($orderID, $urlSegment = false) {
+	public static function find_title() {
 		$page = self::get_if_account_page_exists();
-		return ($urlSegment ? $page->URLSegment . '/' : $page->Link()) . 'order/' . $orderID;
+		return $page->Title;
 	}
 
 	protected static function get_if_account_page_exists() {
-		if($page = DataObject::get_one('AccountPage')) {
-			return $page;
+		if($page = AccountPage::get()) {
+			return $page->First();
 		}
 		user_error('No AccountPage was found. Please create one in the CMS!', E_USER_ERROR);
 	}
 
+	public function requireDefaultRecords() {
+		if($this->canCreate()){
+			$className = get_class($this);
+			$page = new $className();
+			$page->setField('Title',_t($className.'DEFAULTTITLE','Profile'));
+			$page->setField('Content',_t($className.'DEFAULTCONTENT','<p>Default page content. You can change it in the <a href="/admin/">CMS</a></p>'));
+			$page->write();
+			$page->publish('Stage', 'Live');
+			$page->flushCache();
+			DB::alteration_message($className.' page created', 'created');
+		}
+	}
 }
 
-class AccountPage_Controller extends Page_Controller {
-
+class AccountPage_Controller extends BasicPage_Controller {
+	
 	private static $url_segment = 'account';
 	private static $allowed_actions = array(
-		'addressbook',
-		'CreateAddressForm',
-		'DefaultAddressForm',
-		'editprofile',
-		'EditAccountForm',
-		'ChangePasswordForm'
+		'Module',
 	);
+	private static $url_handlers = array(
+		'Module/$Module!/$Action/$ID/$OtherID' => 'Module'
+    );
 
 	protected $member;
 
@@ -60,116 +75,137 @@ class AccountPage_Controller extends Page_Controller {
 		parent::init();
 		if(!Member::currentUserID()) {
 			$messages = array(
-				'default' => _t(
-					'AccountPage.LOGIN', 
-					'You\'ll need to login before you can access the account page.
-					If you are not registered, you won\'t be able to access it until
-					you make your first order, otherwise please enter your details below.'),
-				'logInAgain' => _t(
-					'AccountPage.LOGINAGAIN',
-					'You have been logged out. If you would like to log in again,
-					please do so below.')
+				'default' => '<p class="message good">'.
+					_t(
+						'AccountPage.Message',
+						'You\'ll need to login before you can access the account page.'
+						.'If you are not registered, you won\'t be able to access it until you make your first order,'
+						.' otherwise please enter your details below.'
+					)
+				.'</p>',
+				'logInAgain' => 'You have been logged out. If you would like to log in again, please do so below.'
 			);
-			Security::permissionFailure($this, $messages);
+			Security::permissionFailure($this,$messages);
 			return false;
 		}
 		$this->member = Member::currentUser();
 	}
 
-	public function getTitle() {
+	public static function AccountMenu() {
+		$classes = self::get_type_classes();
+		$menu = array();
+		$menu[] = array(
+			'Link' => self::join_links(AccountPage::find_link()),
+			'Title' => _t('AccountPage.Title','Main Info'),
+			'Status' => (
+					!isset(Controller::curr()->urlParams['Module'])
+					&& get_class(Controller::curr()) == 'AccountPage_Controller'
+				)?'active':''
+		);
+		foreach($classes as $class) {
+			if(
+				(
+					isset(Controller::curr()->urlParams['Module'])
+					&& Controller::curr()->urlParams['Module'] == $class
+				)
+				|| get_class(Controller::curr()) == $class
+			){
+				$mode = 'active';
+			}else{
+				$mode = '';
+			}
+			$menu[] = array(
+				'Link' => self::join_links(AccountPage::find_link(),'Module',$class,'/'),
+				'Title' => $class::getTitle(),
+				'Status' => $mode
+			);
+		}
+		return new ArrayList($menu);
+	}
+
+	public function Module(SS_HTTPRequest $args){
+		if(!in_array(
+			$args->param('Module'),
+			$this->get_type_classes()
+		)){
+			return $this->httpError(404,'Page not found.');
+			//return $this->redirect('/');
+		}
+		$c = singleton($args->param('Module'));
+		$c->setURLParams($args);//die('aaa');
+		//$c->init();
+		return $c->render();
+	}
+
+	public function getTitle(){
 		if($this->dataRecord && $title = $this->dataRecord->Title){
 			return $title;
 		}
-		return _t('AccountPage.Title', "Account");
+		return _t('AccountPage.Title','Profile');
 	}
-
-	public function getMember() {
+	
+	public function getMember(){
 		return $this->member;
 	}
 
-	public function addressbook() {
-		return array(
-			'DefaultAddressForm' => $this->DefaultAddressForm(),
-			'CreateAddressForm' => $this->CreateAddressForm()
-		);
-	}
+	/* gets account editor classes and removes by hide_ancestor */
+	public static function get_type_classes() {
+		$classes = ClassInfo::subclassesFor('AccountEditor');
+		
+		$baseClassIndex = array_search('AccountEditor', $classes);
+		if($baseClassIndex !== FALSE) unset($classes[$baseClassIndex]);
 
-	public function DefaultAddressForm() {
-		$addresses = $this->member->AddressBook()->sort('Created', 'DESC');
-		if($addresses->exists()){
-			$fields = new FieldList(
-				DropdownField::create(
-					"DefaultShippingAddressID",
-					"Shipping Address",
-					$addresses->map('ID', 'toString')->toArray()
-				),
-				DropdownField::create(
-					"DefaultBillingAddressID",
-					"Billing Address",
-					$addresses->map('ID', 'toString')->toArray()
+		$kill_ancestors = array();
+		// figure out if there are any classes we don't want to appear
+		foreach($classes as $class) {
+			$instance = singleton($class);
+			// do any of the progeny want to hide an ancestor?
+			if($ancestor_to_hide = $instance->stat('hide_ancestor')) {
+				// note for killing later
+				$kill_ancestors[] = $ancestor_to_hide;
+			}
+		}
+
+		// If any of the descendents don't want any of the elders to show up, cruelly render the elders surplus to requirements.
+		if($kill_ancestors) {
+			$kill_ancestors = array_unique($kill_ancestors);
+			foreach($kill_ancestors as $mark) {
+				// unset from $classes
+				$idx = array_search($mark, $classes);
+				unset($classes[$idx]);
+			}
+		}
+		return $classes;
+	}
+	
+	public function Link($action = null,$http = true){
+		$link = $this->RelativeLink($action);
+		if($this->config()->secure_domain){
+			$s = array(
+				'http://',
+				'http://www.'
+			);
+			$r = 'https://'.$this->config()->secure_domain;
+		}else{
+			$s = '';
+			$r = '';
+		}
+		
+		return
+			str_ireplace(
+				$s,
+				$r,
+				Director::absoluteURL(
+					Controller::join_links(
+						Director::baseURL(),
+						$link
+					)
 				)
 			);
-			$actions = new FieldList(
-				new FormAction('savedefaultaddresses', "Save Defaults")
-			);
-			$form = new Form($this, "DefaultAddressForm", $fields, $actions);
-			$form->loadDataFrom($this->member);
-
-			return $form;
-		}
-
-		return false;
 	}
-
-	public function savedefaultaddresses($data,$form) {
-		$form->saveInto($this->member);
-		$this->member->write();
-		$this->redirect($this->Link('addressbook'));
+	public function MetaTags($includeTitle = true){
+		$tags = parent::MetaTags($includeTitle);
+		$tags .= '<meta name="robots" content="noindex" />';
+		return $tags;
 	}
-
-	public function CreateAddressForm() {
-		$singletonaddress = singleton('Address');
-		$fields = $singletonaddress->getFrontEndFields();
-		$actions = new FieldList(
-			new FormAction("saveaddress", "Save New Address")
-		);
-		$validator = new RequiredFields($singletonaddress->getRequiredFields());
-
-		return new Form($this, "CreateAddressForm", $fields, $actions, $validator);
-	}
-
-	public function saveaddress($data,$form) {
-		$member = $this->getMember();
-		$address = new Address();
-		$form->saveInto($address);
-		$address->MemberID = $member->ID;
-		$address->write();
-		if(!$member->DefaultShippingAddressID){
-			$member->DefaultShippingAddressID = $address->ID;
-			$member->write();
-		}
-		if(!$member->DefaultBillingAddressID){
-			$member->DefaultBillingAddressID = $address->ID;
-			$member->write();
-		}
-		$this->redirect($this->Link('addressbook'));
-	}
-
-	public function editprofile() {
-		return array();
-	}
-
-	/**
-	 * Return a form allowing the user to edit their details.
-	 *
-	 * @return ShopAccountForm
-	 */
-	public function EditAccountForm() {
-		return new ShopAccountForm($this, 'EditAccountForm');
-	}
-
-	public function ChangePasswordForm() {
-		return new ChangePasswordForm($this, "ChangePasswordForm");
-	}
-
 }
