@@ -79,7 +79,7 @@ abstract class CheckoutComponent {
 /**
  * Proxy class to handle namespacing field names for checkout components
  */
-class CheckoutComponent_Namespaced extends CheckoutComponent{
+class CheckoutComponent_Namespaced extends CheckoutComponent {
 
 	protected $proxy;
 
@@ -93,10 +93,19 @@ class CheckoutComponent_Namespaced extends CheckoutComponent{
 
 	public function getFormFields(Order $order){
 		$fields = $this->proxy->getFormFields($order);
+		$this->setNameSpace($fields);
+		return $fields;
+	}
+
+	protected function setNameSpace(FieldList &$fields){
+		$i = 0;
 		foreach($fields as $field){
 			$field->setName($this->namespaceFieldName($field->getName()));
+			if(get_class($field) === 'CompositeField'){
+				$children = $field->getChildren();
+				$this->setNameSpace($children);
+			}
 		}
-		return $fields;
 	}
 
 	public function validateData(Order $order, array $data){

@@ -1,35 +1,35 @@
-<% require themedCSS(sidecart) %>
-<div class="sidecart">
-	<h3><% _t("HEADLINE","My Cart") %></h3>
-	<% if Cart %>
-		<% with Cart %>
-			<p class="itemcount">There <% if Items.Plural %>are<% else %>is<% end_if %> <a href="$CartLink">$Items.Quantity item<% if Items.Plural %>s<% end_if %></a> in your cart.</p>
-			<div class="checkout">
-				<a href="$CheckoutLink">Checkout</a>
-			</div>
-			<% loop Items %>
-				<div class="item $EvenOdd $FirstLast">
-					<% if Product.Image %>
-						<div class="image">
-							<a href="$Product.Link" title="<% sprintf(_t("READMORE","View &quot;%s&quot;"),$Title) %>">
-								<% with Product %>$Image.setWidth(45)<% end_with %>
+<div class="cart cart-side">
+	<div class="title"><%t Cart.HEADLINE "My Cart" %></div>
+	<% if $Cart %>
+		<% with $Cart %>
+			<div class="count"><%t Cart.ITEMSTOTAL 'There are <a href="{url}" rel="nofollow,noindex">{count}</a> items in your cart' count=$Items.Quantity url=$CartLink %></div>
+			<table class="items table table-striped table-hover table-condensed">
+				<tbody>
+				<% loop $Items %>
+					<tr class="item">
+						<td class="title">
+							<a href="$Product.Link" title="<%t Cart.READMORE 'View &quot;{name}&quot;' name=$Title %>">
+								$TableTitle
 							</a>
-						</div>
-					<% end_if %>
-					<p class="title">
-						<a href="$Product.Link" title="<% sprintf(_t("READMORE","View &quot;%s&quot;"),$Title) %>">
-							$TableTitle
-						</a>
-					</p>
-					<p class="quantityprice"><span class="quantity">$Quantity</span> <span class="times">x</span> <span class="unitprice">$UnitPrice.Nice</span></p>
-					<% if SubTitle %><p class="subtitle">$SubTitle</p><% end_if %>
-					<a class="remove" href="$removeallLink" title="<% sprintf(_t("REMOVEALL","remove from cart"),$TableTitle) %>">
-						<img src="shop/images/remove.gif" alt="x"/>
-					</a>
-				</div>
-			<% end_loop %>
+							<% if $SubTitle %><div class="subtitle">$SubTitle</div><% end_if %>
+						</td>
+						<td class="quantity-price">
+							<span class="quantity">$Quantity</span> <span class="times">x</span> <span class="unitprice">$UnitPrice.Nice</span>
+						</td>
+						<td>
+							<a class="remove" href="$removeallLink" title="<%t Cart.REMOVEALL 'Remove {name} from cart' name=$TableTitle %>">
+								<span class="icon icon-remove"></span>
+							</a>
+						</td>
+					</tr>
+				<% end_loop %>
+				</tbody>
+			</table>
+			<a href="$CheckoutLink" title="<%t Cart.CheckoutClick %>" rel="nofollow,noindex" class="checkout">
+				<%t Cart.CheckoutGoTo "Checkout" %>
+			</a>
 		<% end_with %>
 	<% else %>
-		<p class="noItems"><% _t("NOITEMS","There are no items in your cart") %>.</p>
+		<div class="no-items alert alert-error"><%t Cart.NOITEMS "There are no items in your cart" %>.</div>
 	<% end_if %>
 </div>

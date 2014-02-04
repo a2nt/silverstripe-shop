@@ -1,6 +1,6 @@
 <?php
 
-class PaymentForm extends CheckoutForm{
+class PaymentForm extends CheckoutForm {
 	
 	function checkoutSubmit($data, $form) {
 		//form validation has passed by this point, so we can save data

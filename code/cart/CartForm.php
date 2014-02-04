@@ -1,22 +1,36 @@
 <?php
 
-class CartForm extends Form{
+class CartForm extends BootstrapForm {
 
 	protected $cart;
 
-	public function __construct($controller, $name = "CartForm", $cart, $template = "Cart"){
+	public function __construct($controller, $name = 'CartForm', $cart, $template = 'Cart'){
 		$this->cart = $cart;
-		parent::__construct($controller, $name, new FieldList(
-			LiteralField::create("cartcontent",
-				SSViewer::execute_template($template, $cart->customise(array(
-					'Items' => $this->editableItems($cart->Items())
-				)),array(
-					'Editable' => true
-				))
+		parent::__construct(
+			$controller,
+			$name,
+			FieldList::create(
+				LiteralField::create(
+					'cartcontent',
+					SSViewer::execute_template(
+						$template,
+						$cart->customise(array(
+							'Items' => $this->editableItems($cart->Items())
+						)),
+						array(
+							'Editable' => true
+						)
+					)
+				)
+			),
+			FieldList::create(
+				FormAction::create(
+					'updatecart',
+					'<span class="icon icon-cog"></span> '
+					._t('CartForm.UPDATE','Update Cart')
+				)->addExtraClass(Page_Controller::getBtnClass())
 			)
-		),new FieldList(
-			FormAction::create("updatecart","Update Cart")
-		));
+		);
 	}
 	
 	public function editableItems($items){
@@ -26,23 +40,23 @@ class CartForm extends Form{
 			if(!$item->Product()){
 				continue;
 			}
-			$name = "Item[$item->ID]";
-			$quantity = NumericField::create($name."[Quantity]","Quantity",$item->Quantity);
+			$name = 'Item['.$item->ID.']';
+			$quantity = NumericField::create($name.'[Quantity]','Quantity',$item->Quantity);
 			$variation = false;
 			$variations = $item->Product()->Variations();
 			if($variations->exists()){
 				$variation = DropdownField::create(
-					$name."[ProductVariationID]",
-					"Varaition",
+					$name.'[ProductVariationID]',
+					'Varaition',
 					$variations->map('ID','Title'),
 					$item->ProductVariationID
 				);
 			}
-			$remove = CheckboxField::create($name."[Remove]","Remove");
+			$remove = CheckboxField::create($name.'[Remove]','Remove');
 			$editables->push($item->customise(array(
-				"QuantityField" => $quantity,
-				"VariationField" => $variation,
-				"RemoveField" => $remove 
+				'QuantityField' => $quantity,
+				'VariationField' => $variation,
+				'RemoveField' => $remove 
 			)));
 		}
 
@@ -86,13 +100,13 @@ class CartForm extends Form{
 		
 		}
 		if($removecount){
-			$messages['remove'] = "Removed ".$removecount." items.";
+			$messages['remove'] = _t('CartForm.REMOVED','Removed {count} items.',array('count' => $removecount));
 		}
 		if($updatecount){
-			$messages['updatecount'] = "Updated ".$updatecount." items.";
+			$messages['updatecount'] = _t('CartForm.UPDATED','Updated {count} items.',array('count' => $updatecount));
 		}
 		if(count($messages)){
-			$form->sessionMessage(implode(" ", $messages),"good");
+			$form->sessionMessage(implode(' ', $messages),'good');
 		}		
 		$this->controller->redirectBack();
 	}

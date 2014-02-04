@@ -22,7 +22,7 @@ class ShopMember extends DataExtension {
 	 * @return Member|null
 	 */
 	public static function get_by_identifier($idvalue) {
-		return Member::get()->filter(Member::get_unique_identifier_field(), $idvalue)->first();
+		return Member::get()->filter(Config::inst()->get('Member','unique_identifier_field'), $idvalue)->first();
 	}
 	
 	/**
@@ -31,10 +31,10 @@ class ShopMember extends DataExtension {
 	 * @return Member|false the newly created, or existing member
 	 */
 	public static function create_or_merge($data) {
-		if(!isset($data[Member::get_unique_identifier_field()]) || empty($data[Member::get_unique_identifier_field()])){
+		if(!isset($data[Config::inst()->get('Member','unique_identifier_field')]) || empty($data[Config::inst()->get('Member','unique_identifier_field')])){
 			return false;	
 		}
-		$existingmember = self::get_by_identifier($data[Member::get_unique_identifier_field()]);
+		$existingmember = self::get_by_identifier($data[Config::inst()->get('Member','unique_identifier_field')]);
 		if($existingmember && $existingmember->exists()){
 			if(Member::currentUserID() != $existingmember->ID) {
 				return false;

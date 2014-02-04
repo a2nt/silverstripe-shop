@@ -8,7 +8,7 @@ class ShopConfig extends DataExtension{
 	
 	private static $has_one = array(
 		'TermsPage' => 'SiteTree',
-		"CustomerGroup" => "Group"
+		'CustomerGroup' => 'Group'
 	);
 
 	private static $email_from;
@@ -18,24 +18,32 @@ class ShopConfig extends DataExtension{
 	}
 	
 	function updateCMSFields(FieldList $fields) {
-		$fields->insertBefore($shoptab = new Tab('Shop', 'Shop'), 'Access');
-		$fields->addFieldsToTab("Root.Shop", new TabSet("ShopTabs",
-			$maintab = new Tab("Main",
-				TreeDropdownField::create('TermsPageID', 
-					_t("ShopConfig.TERMSPAGE",'Terms and Conditions Page'), 
-				'SiteTree'),
-				TreeDropdownField::create("CustomerGroupID",
-					_t("ShopConfig.CUSTOMERGROUP","Group to add new customers to"),
-				"Group")
+		$fields->insertBefore(
+			Tab::create('Shop',
+				_t('ShopConfig.SHOPTAB','Shop Settings')
 			),
-			$countriestab = new Tab("Countries",
-				CheckboxSetField::create('AllowedCountries','Allowed Ordering and Shipping Countries',
-					self::config()->iso_3166_country_codes
+			'Access'
+		);
+		$fields->addFieldsToTab('Root.Shop', TabSet::create('ShopTabs',
+			Tab::create('Main',
+				_t('ShopConfig.MAINTAB','Main'),
+				TreeDropdownField::create('TermsPageID', 
+					_t('ShopConfig.TERMSPAGE','Terms and Conditions Page'), 
+				'SiteTree'),
+				TreeDropdownField::create('CustomerGroupID',
+					_t('ShopConfig.CUSTOMERGROUP','Group to add new customers to'),
+				'Group')
+			),
+			Tab::create('Countries',
+				_t('ShopConfig.COUNTRIESTAB','Allowed Countries'),
+				CheckboxSetField::create(
+					'AllowedCountries',
+					_t('ShopConfig.ALLOWEDCOUNTRIES','Allowed Ordering and Shipping Countries'),
+					Geoip::getCountryDropDown()
 				)
 			)
 		));
-		$fields->removeByName("CreateTopLevelGroups");
-		$countriestab->setTitle("Allowed Countries");
+		$fields->removeByName('CreateTopLevelGroups');
 	}
 
 	static function get_base_currency(){
@@ -55,13 +63,13 @@ class ShopConfig extends DataExtension{
 		$countries = self::config()->iso_3166_country_codes;
 		asort($countries);
 		if($allowed = $this->owner->AllowedCountries){
-			$allowed = explode(",",$allowed);
+			$allowed = explode(',',$allowed);
 			if(count($allowed > 0))
 				$countries = array_intersect_key($countries,array_flip($allowed));
 		}
 		if($prefixisocode){
 			foreach($countries as $key => $value){
-				$countries[$key] = "$key - $value";
+				$countries[$key] = '$key - $value';
 			}
 		}
 		return $countries;
@@ -85,7 +93,7 @@ class ShopConfig extends DataExtension{
 	 * @return Config_ForClass configuration object
 	 */
 	public static function config(){
-		return new Config_ForClass("ShopConfig");
+		return new Config_ForClass('ShopConfig');
 	}
 	
 }

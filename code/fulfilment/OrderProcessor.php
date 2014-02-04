@@ -210,7 +210,7 @@ class OrderProcessor{
 	* @param $copyToAdmin - true by default, whether it should send a copy to the admin
 	*/
 	function sendEmail($emailClass, $copyToAdmin = true) {
-		$from = ShopConfig::config()->email_from ? ShopConfig::config()->email_from : Email::getAdminEmail();
+		$from = ShopConfig::config()->email_from ? ShopConfig::config()->email_from : Config::inst()->get('Email','admin_email');
 		$to = $this->order->getLatestEmail();
 		$subject = sprintf(_t("Order.EMAILSUBJECT", "Shop Sale Information #%d"), $this->order->Reference);
 		$purchaseCompleteMessage = DataObject::get_one('CheckoutPage')->PurchaseComplete;
@@ -219,7 +219,7 @@ class OrderProcessor{
 		$email->setTo($to);
 		$email->setSubject($subject);
 		if($copyToAdmin){
-			$email->setBcc(Email::getAdminEmail());
+			$email->setBcc(Config::inst()->get('Email','admin_email'));
 		}
 		$email->populateTemplate(array(
 			'PurchaseCompleteMessage' => $purchaseCompleteMessage,
@@ -261,7 +261,7 @@ class OrderProcessor{
 		if(self::$receipt_email) {
 			$adminEmail = self::$receipt_email;
 		}else {
-			$adminEmail = Email::getAdminEmail();
+			$adminEmail = Config::inst()->get('Email','admin_email');
 		}
 		$e = new Order_statusEmail();
 		$e->populateTemplate($this);

@@ -7,9 +7,20 @@ abstract class AddressCheckoutComponent extends CheckoutComponent{
 	protected $addresstype;
 
 	public function getFormFields(Order $order){
-		return $this->getAddress($order)->getFrontEndFields(array(
+		$fields = $this->getAddress($order)->getFrontEndFields(array(
 			'addfielddescriptions' => $this->formfielddescriptions
 		));
+		$fields->insertBefore(
+			HeaderField::create(
+				$this->addresstype.'Header',
+				_t(
+					'Address.'.strtoupper($this->addresstype).'TYPE',
+					$this->addresstype.' Address'
+				)
+			),
+			'Anchor'
+		);
+		return $fields;
 	}
 
 	function getRequiredFields(Order $order){
@@ -74,13 +85,40 @@ abstract class AddressCheckoutComponent extends CheckoutComponent{
 }
 
 class ShippingAddressCheckoutComponent extends AddressCheckoutComponent{
-
 	protected $addresstype = "Shipping";
-
 }
 
 class BillingAddressCheckoutComponent extends AddressCheckoutComponent{
-
 	protected $addresstype = "Billing";
-
+	public function getFormFields(Order $order){
+		$fields = FieldList::create(
+			CheckboxField::create(
+				$this->addresstype.'ShowToggler',
+				_t('Address.SEPARATEBILLINGADDRESS','Separate Billing Address')
+			)
+				->setAttribute('data-toggle','collapse')
+				->setAttribute('data-target','.billingFields'),
+			CompositeField::create()
+				->setChildren(
+					$basicFields = $this->getAddress($order)->getFrontEndFields(array(
+						'addfielddescriptions' => $this->formfielddescriptions
+					))
+				)
+				->addExtraClass('billingFields collapse')
+		);
+		$basicFields->insertBefore(
+			HeaderField::create(
+				$this->addresstype.'Header',
+				_t(
+					'Address.'.strtoupper($this->addresstype).'TYPE',
+					$this->addresstype.' Address'
+				)
+			),
+			'Anchor'
+		);
+		return $fields;
+	}
+	function getRequiredFields(Order $order){
+		return array();
+	}
 }

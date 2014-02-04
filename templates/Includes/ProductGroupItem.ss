@@ -1,29 +1,55 @@
-<div class="productItem">
-	<% if Image %>
-		<a href="$Link" title="<% sprintf(_t("READMORE","Click here to read more on &quot;%s&quot;"),$Title) %>">
-			<img src="$Image.Thumbnail.URL" alt="<% sprintf(_t("IMAGE","%s image"),$Title) %>" />
-		</a>
-	<% else %>
-		<a href="$Link" title="<% sprintf(_t("READMORE"),$Title) %>" class="noimage"><!-- no image --></a>
+<div class="hproduct h-product">
+	<% if $Image %>
+	<a href="$Link" title="<%t Cart.READMORE 'Click here to read more on &quot;{name}&quot;' name=$Title %>">
+		<img src="$Image.Thumbnail.URL" alt="<%t Product.IMAGE '{name} image' name=$Title %>" />
+	</a>
 	<% end_if %>
-	<h3 class="productTitle"><a href="$Link" title="<% sprintf(_t("READMORE"),$Title) %>">$Title</a></h3>
-	<% if Model %><p><strong><% _t("MODEL","Model") %>:</strong> $Model.XML</p><% end_if %>
-	<div>
-		<% if Price %><strong class="price">$Price.Nice</strong> <span class="currency">$Currency</span><% end_if %>
-		<% if View %>
-			<div class="view">
-				<a href="$Link" title="<% sprintf(_t("VIEW","View &quot;%s&quot;"),$Title) %>">
-					<% _t("VIEW","View Product") %>
-				</a>
-			</div>
-		<% else %>
-			<% if canPurchase %>
-			<div class="add">
-				<a href="$addLink" title="<% sprintf(_t("ADD","Add &quot;%s&quot; to your cart"),$Title) %>">
-					<% _t("ADDLINK","Add to Cart") %>
-				</a>
-			</div>
+	
+	<h3 class="title">
+		<a 
+			href="$Link"
+			title="<%t Cart.READMORE 'Click here to read more on &quot;{name}&quot;' name=$Title %>"
+			class="url fn photo p-name u-photo u-url"
+		 >$Title</a>
+	</h3>
+	<% if $Model %>
+	<div class="var model">
+		<span class="title"><%t Product.MODEL "Model" %>:</span>
+		<span class="model">{$Model.XML}</span>
+	</div>
+	<% end_if %>
+
+	<% if $PriceRange %>
+		<div class="price">
+			<strong class="value">$PriceRange.Min.Nice</strong>
+			<% if PriceRange.HasRange %>
+				- <strong class="value">$PriceRange.Max.Nice</strong>
 			<% end_if %>
+			<span class="currency">$Price.Currency</span>
+		</div>
+	<% else %>
+		<% if $Price %>
+			<div class="p-price price">
+				<strong class="value">$Price.Nice</strong>
+				<span class="currency">$Price.Currency</span>
+			</div>
 		<% end_if %>
+	<% end_if %>
+
+	<% if $View %>
+		<div class="view">
+			<a href="$Link" title="<%t Produc.VIEWTITLE 'View &quot;{name}&quot;' name=$Title %>">
+				<%t Produc.VIEWLINK 'View' %>
+			</a>
+		</div>
+	<% else %>
+		<% if $canPurchase %>
+		<div class="add">
+			<a href="$addLink" title="<%t Product.ADDONE 'Add &quot;{name}&quot; to Cart' name=$Title %>">
+				<%t Product.ADDLINK 'Add to Cart' %>
+			</a>
+		</div>
+		<% end_if %>
+	<% end_if %>
 	</div>
 </div>																			

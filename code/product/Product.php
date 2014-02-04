@@ -57,22 +57,35 @@ class Product extends Page implements Buyable{
 	private static $searchable_fields = array(
 		'InternalItemID','Title','BasePrice'
 	);
-	
-	private static $field_labels = array(
-		'InternalItemID' => 'SKU',
-		'Title' => 'Title',
-		'BasePrice' => 'Price'
-	);
 
-	private static $singular_name = "Product";
-	private static $plural_name = "Products";
+	private static $singular_name = 'Product';
+	private static $plural_name = 'Products';
 	private static $icon = 'shop/images/icons/package';
 	private static $default_parent = 'ProductCategory';
 	private static $default_sort = '"Title" ASC';
 	
 	private static $global_allow_purchase = true;
-	private static $order_item = "Product_OrderItem";
+	private static $order_item = 'Product_OrderItem';
 
+	function generateReference(){
+		$ref = 'PR'.strtoupper(substr(md5(uniqid(mt_rand(),true)),0,8));
+		$this->extend('generateReference',$reference);
+
+		//prevent generating references that are the same
+		$refs = Product::get()->filter('InternalItemID',$ref);
+		if($refs->exists()){
+			$ref .= $refs->count();
+		}
+		$this->InternalItemID = $ref;
+	}
+
+	function onBeforeWrite(){
+		parent::onBeforeWrite();
+		if(!$this->getField('Reference')){
+			$this->generateReference();
+		}
+	}
+	
 	/**
 	 * Add product fields to CMS
 	 * @return FieldList updated field list
@@ -83,37 +96,96 @@ class Product extends Page implements Buyable{
 		$fields->fieldByName('Root.Main.Title')->setTitle(_t('Product.PAGETITLE','Product Title'));
 		//general fields
 		$fields->addFieldsToTab('Root.Main',array(
-			TextField::create('InternalItemID', _t('Product.CODE', 'Product Code/SKU'), '', 30),
-			DropdownField::create('ParentID',_t("Product.CATEGORY","Category"), $this->categoryoptions())
-				->setDescription(_t("Product.CATEGORYDESCRIPTION","This is the parent page or default category.")),
-			ListBoxField::create('ProductCategories',_t("Product.ADDITIONALCATEGORIES","Additional Categories"),
-					ProductCategory::get()->map('ID','NestedTitle')->toArray()
-				)->setMultiple(true),
-			TextField::create('Model', _t('Product.MODEL', 'Model'), '', 30),
-			CheckboxField::create('FeaturedProduct', _t('Product.FEATURED', 'Featured Product')),
-			CheckboxField::create('AllowPurchase', _t('Product.ALLOWPURCHASE', 'Allow product to be purchased'), 1)
+			TextField::create(
+				'InternalItemID',
+				_t('Product.CODE', 'Product Code/SKU'),
+				'', 30
+			),
+			DropdownField::create(
+				'ParentID',
+				_t('Product.CATEGORY','Category'),
+				$this->categoryoptions()
+			)
+				->setDescription(_t('Product.CATEGORYDESCRIPTION','This is the parent page or default category.')),
+			ListBoxField::create(
+				'ProductCategories',
+				_t('Product.ADDITIONALCATEGORIES','Additional Categories'),
+				ProductCategory::get()->map('ID','NestedTitle')->toArray()
+			)
+				->setMultiple(true),
+			TextField::create(
+				'Model',
+				_t('Product.MODEL', 'Model'),
+				'', 30
+			),
+			CheckboxField::create(
+				'FeaturedProduct',
+				_t('Product.FEATURED', 'Featured Product')
+			),
+			CheckboxField::create(
+				'AllowPurchase',
+				_t('Product.ALLOWPURCHASE', 'Allow product to be purchased'),
+				1
+			)
 		),'Content');
+
+		$tabset = $fields->findOrMakeTab('Root');
 		//pricing
-		$fields->addFieldsToTab('Root.Pricing',array(
-			TextField::create('BasePrice', _t('Product.PRICE', 'Price'))
-				->setDescription(_t('Product.PRICEDESC',"Base price to sell this product at."))
-				->setMaxLength(12),
-			TextField::create('CostPrice', _t('Product.COSTPRICE', 'Cost Price'))
-				->setDescription(_t('Product.COSTPRICEDESC','Wholesale price before markup.'))
-				->setMaxLength(12)
-		));
+		$tabset->push(
+			Tab::create(
+				'PricingTab',
+				_t('Product.PRICINGTAB','Pricing')
+			)
+				->push(
+					TextField::create('BasePrice', _t('Product.PRICE', 'Price'))
+						->setDescription(_t('Product.PRICEDESC','Base price to sell this product at.'))
+						->setMaxLength(12)
+				)
+				->push(
+					TextField::create('CostPrice', _t('Product.COSTPRICE', 'Cost Price'))
+						->setDescription(_t('Product.COSTPRICEDESC','Wholesale price before markup.'))
+						->setMaxLength(12)
+				)
+		);
 		//physical measurements
-		$weightunit = "kg"; //TODO: globalise / make custom
-		$lengthunit = "cm";  //TODO: globalise / make custom
-		$fields->addFieldsToTab('Root.Shipping',array(
-			TextField::create('Weight', sprintf(_t('Product.WEIGHT', 'Weight (%s)'), $weightunit), '', 12),
-			TextField::create('Height', sprintf(_t('Product.HEIGHT', 'Height (%s)'), $lengthunit), '', 12),
-			TextField::create('Width', sprintf(_t('Product.WIDTH', 'Width (%s)'), $lengthunit), '', 12),
-			TextField::create('Depth', sprintf(_t('Product.DEPTH', 'Depth (%s)'), $lengthunit), '', 12),
-		));
+		$weightunit = 'kg'; //TODO: globalise / make custom
+		$lengthunit = 'cm';  //TODO: globalise / make custom
+		$tabset->push(
+			Tab::create(
+				'ShippingTab',
+				_t('Product.SHIPPINGTAB','Shipping')
+			)
+				->push(
+					TextField::create(
+						'Weight',
+						_t('Product.WEIGHT','Weight ({unit})',array('unit' => $weightunit)),
+						'',12
+					)
+				)
+				->push(
+					TextField::create(
+						'Height',
+						_t('Product.HEIGHT', 'Height ({unit})',array('unit' => $lengthunit)),
+						'',12
+					)
+				)
+				->push(
+					TextField::create(
+						'Depth',
+						_t('Product.DEPTH', 'Depth ({unit})',array('unit' => $lengthunit)),
+						'',12
+					)
+				)
+		);
 		if(!$fields->dataFieldByName('Image')) {
-			$fields->addFieldToTab('Root.Images', 
-				UploadField::create('Image', _t('Product.IMAGE', 'Product Image'))
+			$tabset->push(
+				Tab::create(
+					'ImageTab',
+					_t('Product.IMAGETAB','Shipping')
+				)
+					->push(
+						UploadField::create('Image', _t('Product.IMAGE', 'Product Image'))
+					)
 			);
 		}
 		self::enableCMSFieldsExtensions();
@@ -129,12 +201,12 @@ class Product extends Page implements Buyable{
 	private function categoryoptions(){
 		$categories = ProductCategory::get()->map('ID','NestedTitle')->toArray();
 		$categories = array(
-			0 => _t("SiteTree.PARENTTYPE_ROOT", "Top-level page")
+			0 => _t('SiteTree.PARENTTYPE_ROOT', 'Top-level page')
 		) + $categories;
 		
 		if($this->ParentID && !($this->Parent() instanceof ProductCategory)){
 			$categories = array(
-				$this->ParentID => $this->Parent()->Title." (".$this->Parent()->i18n_singular_name().")"
+				$this->ParentID => $this->Parent()->Title.' ('.$this->Parent()->i18n_singular_name().')'
 			) + $categories;
 		}
 
@@ -176,8 +248,8 @@ class Product extends Page implements Buyable{
 		} 
 		$allowpurchase = false;
 		if(
-			self::has_extension("ProductVariationsExtension") &&
-			ProductVariation::get()->filter("ProductID",$this->ID)->first()
+			self::has_extension('ProductVariationsExtension') &&
+			ProductVariation::get()->filter('ProductID',$this->ID)->first()
 		){ 
 			foreach($this->Variations() as $variation){
 				if($variation->canPurchase()){
@@ -239,7 +311,7 @@ class Product extends Page implements Buyable{
 	 */
 	function sellingPrice(){
 		$price = $this->BasePrice;
-		$this->extend("updateSellingPrice",$price); //TODO: this is not ideal, because prices manipulations will not happen in a known order
+		$this->extend('updateSellingPrice',$price); //TODO: this is not ideal, because prices manipulations will not happen in a known order
 		if($price < 0){
 			$price = 0; //prevent negative values
 		}
@@ -254,7 +326,7 @@ class Product extends Page implements Buyable{
 	}
 	
 	function setPrice($val){
-		$this->setField("BasePrice", $val);
+		$this->setField('BasePrice', $val);
 	}
 
 	function Link(){
@@ -276,6 +348,15 @@ class Product extends Page implements Buyable{
 		return ShoppingCart_Controller::remove_all_item_link($this);
 	}
 
+	public function MetaTags($includeTitle = true){
+		$tags = parent::MetaTags($includeTitle);
+		$tags .= '<meta property="og:type" content="website" />';
+		$tags .= '<meta property="og:title" content="'.Convert::raw2att($this->meta_title()).'"/>';
+		$tags .= '<meta property="og:url" content="'.$this->AbsoluteLink().'"/>';
+		$tags .= '<meta property="og:image" content="'.Director::absoluteURL($this->Image()->SetWidth(200)->Link()).'"/>';
+		$tags .= '<meta property="og:description" content="'.$this->getField('MetaDescription').'"/>';
+		return $tags;
+	}
 }
 
 class Product_Controller extends Page_Controller {
@@ -285,11 +366,11 @@ class Product_Controller extends Page_Controller {
 		'AddProductForm'
 	);
 	
-	public $formclass = "AddProductForm"; //allow overriding the type of form used
+	public $formclass = 'AddProductForm'; //allow overriding the type of form used
 	
 	function Form(){
 		$formclass = $this->formclass;
-		$form = new $formclass($this,"Form");
+		$form = new $formclass($this,'Form');
 		$this->extend('updateForm',$form);
 		return $form;
 	}
@@ -309,7 +390,7 @@ class Product_OrderItem extends OrderItem {
 	/**
 	 * the has_one join field to identify the buyable
 	 */
-	private static $buyable_relationship = "Product";
+	private static $buyable_relationship = 'Product';
 
 	/**
 	 * Get related product
@@ -324,7 +405,7 @@ class Product_OrderItem extends OrderItem {
 			//ie use live if in cart (however I see no logic for checking cart status)
 		if($this->ProductID && $this->ProductVersion && !$forcecurrent){
 			return Versioned::get_version('Product', $this->ProductID, $this->ProductVersion);
-		}elseif($this->ProductID && $product = Versioned::get_one_by_stage('Product','Live', "\"Product\".\"ID\"  = ".$this->ProductID)){
+		}elseif($this->ProductID && $product = Versioned::get_one_by_stage('Product','Live', '"Product"."ID"  = '.$this->ProductID)){
 			return $product;
 		}
 		return false;		
@@ -349,5 +430,4 @@ class Product_OrderItem extends OrderItem {
 			return $product->Link();
 		}
 	}
-
 }

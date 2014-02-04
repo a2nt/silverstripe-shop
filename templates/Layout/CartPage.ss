@@ -1,32 +1,32 @@
-<% require ThemedCSS(checkout) %>
-<h1 class="pagetitle">$Title</h1>
-<div class="typography">
-	<% if Content %>
-		$Content
-	<% end_if %>
-</div>
-<% if Cart %>
-	
-	<% if CartForm %>
+<% include Content %>
+
+<% if $Cart %>
+	<% if $CartForm %>
 		$CartForm
 	<% else %>
-		<% with Cart %><% include Cart Editable=true %><% end_with %>
+		<% with $Cart %>
+			<% include Cart Editable=true %>
+		<% end_with %>
 	<% end_if %>
-	
 <% else %>
-	<p class="message warning"><% _t('CartPage.ss.CARTEMPTY','Your cart is empty.') %></p>
+	<div class="alert alert-error"><%t CartPage.CARTEMPTY 'Your cart is empty.' %></div>
 <% end_if %>
-<div class="cartfooter">
-	<% if ContinueLink %>
-		<a class="continuelink button" href="$ContinueLink">
-			<% _t('CartPage.ss.CONTINUE','Continue Shopping') %>
+
+<div class="cart-footer">
+	<div class="btn-group">
+	<% if $ContinueLink %>
+		<a class="continuelink btn $BtnClass" href="$ContinueLink" rel="nofollow,noindex">
+			<span class="icon icon-chevron-left"></span>
+			<%t CartPage.CONTINUE 'Continue Shopping' %>
 		</a>
 	<% end_if %>
-	<% if Cart %>
-		<% if Cart.CheckoutLink %>
-			<a class="checkoutlink button" href="$Cart.CheckoutLink">
-				<% _t('CartPage.ss.PROCEEDTOCHECKOUT','Proceed to Checkout') %>
+	<% if $Cart %>
+		<% if $Cart.CheckoutLink %>
+			<a class="checkoutlink btn btn-success" href="$Cart.CheckoutLink" rel="nofollow,noindex">
+				<%t CartPage.PROCEEDTOCHECKOUT 'Proceed to Checkout' %>
+				<span class="icon icon-chevron-right icon-white"></span>
 			</a>
 		<% end_if %>
 	<% end_if %>
+	</div>
 </div>

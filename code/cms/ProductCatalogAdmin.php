@@ -17,5 +17,7 @@ class ProductCatalogAdmin extends ModelAdmin {
 	private static $model_importers = array(
 		"Product" => "ProductBulkLoader"	
 	);
-
+	public function alternateAccessCheck(){
+		return false;
+	}
 }

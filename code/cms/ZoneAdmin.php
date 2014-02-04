@@ -10,4 +10,7 @@ class ZoneAdmin extends ModelAdmin{
 		'Zone'
 	);
 
+	public function alternateAccessCheck(){
+		return false;
+	}
 }
