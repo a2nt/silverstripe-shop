@@ -51,8 +51,8 @@ class OrderManipulation extends Extension{
 	 */
 	public function orderfromid($extrafilter = null) {
 		$request = $this->owner->getRequest();
-		$orderid = (int)(($request->param('ID') ||
-							$request->postVar('OrderID')));
+		$orderid = $request->param('ID') ? $request->param('ID') : $request->postVar('OrderID');
+		$orderid = (int) $orderid;
 
 		return $this->allorders()->byID($orderid);
 	}
@@ -93,7 +93,6 @@ class OrderManipulation extends Extension{
 	public function order(SS_HTTPRequest $request) {	
 		$order = $this->orderfromid();
 		if(!$order) {
-
 			return $this->owner->httpError(404, "Order could not be found");
 		}
 
