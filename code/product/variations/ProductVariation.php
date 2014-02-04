@@ -49,9 +49,15 @@ class ProductVariation extends DataObject implements Buyable{
 	private static $order_item = "ProductVariation_OrderItem";
 
 	function getCMSFields() {
-		$fields = new FieldList(
-			TextField::create('InternalItemID','Product Code'),
-			TextField::create('Price')
+		$fields = FieldList::create(
+			TextField::create(
+				'InternalItemID',
+				_t('ProductVariation.db_InternalItemID','Product Code')
+			),
+			TextField::create(
+				'Price',
+				_t('ProductVariation.db_Price','Price')
+			)
 		);
 		//add attributes dropdowns
 		$attributes = $this->Product()->VariationAttributeTypes();

@@ -6,24 +6,19 @@
 	<% else %>
 		<a href="$Link" title="<% sprintf(_t("READMORE"),$Title) %>" class="noimage"><!-- no image --></a>
 	<% end_if %>
-	<h3 class="productTitle"><a href="$Link" title="<% sprintf(_t("READMORE"),$Title) %>">$Title</a></h3>
-	<% if Model %><p><strong><% _t("MODEL","Model") %>:</strong> $Model.XML</p><% end_if %>
-	<div>
-		<% if Price %><strong class="price">$Price.Nice</strong> <span class="currency">$Currency</span><% end_if %>
-		<% if View %>
-			<div class="view">
-				<a href="$Link" title="<% sprintf(_t("VIEW","View &quot;%s&quot;"),$Title) %>">
-					<% _t("VIEW","View Product") %>
-				</a>
-			</div>
-		<% else %>
-			<% if canPurchase %>
-			<div class="add">
-				<a href="$addLink" title="<% sprintf(_t("ADD","Add &quot;%s&quot; to your cart"),$Title) %>">
-					<% _t("ADDLINK","Add to Cart") %>
-				</a>
-			</div>
-			<% end_if %>
+	<% if $View %>
+		<div class="view">
+			<a href="$Link" title="<%t Produc.VIEWTITLE 'View &quot;{name}&quot;' name=$Title %>">
+				<%t Produc.VIEWLINK 'View' %>
+			</a>
+		</div>
+	<% else %>
+		<% if $canPurchase %>
+		<div class="add">
+			<a href="$addLink" title="<%t Product.ADD 'Add &quot;{name}&quot; to Cart' name=$Title %>">
+				<%t Product.ADDLINK 'Add to Cart' %>
+			</a>
+		</div>
 		<% end_if %>
 	</div>
 </div>																			

@@ -80,40 +80,109 @@ class Product extends Page implements Buyable{
 	function getCMSFields() {
 		self::disableCMSFieldsExtensions();
 		$fields = parent::getCMSFields();
-		$fields->fieldByName('Root.Main.Title')->setTitle(_t('Product.PAGETITLE','Product Title'));
-		//general fields
+		$fields->fieldByName('Root.Main.Title')->setTitle(_t('Product.db_Title','Product Title'));
+		
+		// general fields
 		$fields->addFieldsToTab('Root.Main',array(
-			TextField::create('InternalItemID', _t('Product.CODE', 'Product Code/SKU'), '', 30),
-			DropdownField::create('ParentID',_t("Product.CATEGORY","Category"), $this->categoryoptions())
-				->setDescription(_t("Product.CATEGORYDESCRIPTION","This is the parent page or default category.")),
-			ListBoxField::create('ProductCategories',_t("Product.ADDITIONALCATEGORIES","Additional Categories"),
-					ProductCategory::get()->map('ID','NestedTitle')->toArray()
-				)->setMultiple(true),
-			TextField::create('Model', _t('Product.MODEL', 'Model'), '', 30),
-			CheckboxField::create('FeaturedProduct', _t('Product.FEATURED', 'Featured Product')),
-			CheckboxField::create('AllowPurchase', _t('Product.ALLOWPURCHASE', 'Allow product to be purchased'), 1)
+			TextField::create(
+				'InternalItemID',
+				_t('Product.db_InternalItemID', 'Product Code/SKU'),
+				'', 30
+			),
+			DropdownField::create(
+				'ParentID',
+				_t('Product.db_ParentID','Category'),
+				$this->categoryoptions()
+			)
+				->setDescription(_t('Product.CATEGORYDESCRIPTION','This is the parent page or default category.')),
+			ListBoxField::create(
+				'ProductCategories',
+				_t('Product.many_many_ProductCategories','Additional Categories'),
+				ProductCategory::get()->map('ID','NestedTitle')->toArray()
+			)
+				->setMultiple(true),
+			TextField::create(
+				'Model',
+				_t('Product.MODEL', 'Model'),
+				'', 30
+			),
+			CheckboxField::create(
+				'FeaturedProduct',
+				_t('Product.db_FeaturedProduct', 'Featured Product')
+			),
+			CheckboxField::create(
+				'AllowPurchase',
+				_t('Product.db_AllowPurchase', 'Allow product to be purchased'),
+				1
+			)
 		),'Content');
-		//pricing
-		$fields->addFieldsToTab('Root.Pricing',array(
-			TextField::create('BasePrice', _t('Product.PRICE', 'Price'))
-				->setDescription(_t('Product.PRICEDESC',"Base price to sell this product at."))
-				->setMaxLength(12),
-			TextField::create('CostPrice', _t('Product.COSTPRICE', 'Cost Price'))
-				->setDescription(_t('Product.COSTPRICEDESC','Wholesale price before markup.'))
-				->setMaxLength(12)
-		));
-		//physical measurements
-		$weightunit = "kg"; //TODO: globalise / make custom
-		$lengthunit = "cm";  //TODO: globalise / make custom
-		$fields->addFieldsToTab('Root.Shipping',array(
-			TextField::create('Weight', sprintf(_t('Product.WEIGHT', 'Weight (%s)'), $weightunit), '', 12),
-			TextField::create('Height', sprintf(_t('Product.HEIGHT', 'Height (%s)'), $lengthunit), '', 12),
-			TextField::create('Width', sprintf(_t('Product.WIDTH', 'Width (%s)'), $lengthunit), '', 12),
-			TextField::create('Depth', sprintf(_t('Product.DEPTH', 'Depth (%s)'), $lengthunit), '', 12),
-		));
+		//
+
+		$tabset = $fields->findOrMakeTab('Root');
+		
+		// pricing fields
+		$tabset->push(
+			Tab::create(
+				'PricingTab',
+				_t('Product.PRICINGTAB','Pricing')
+			)
+				->push(
+					CurrencyField::create('BasePrice', _t('Product.PRICE', 'Price'))
+						->setDescription(_t('Product.PRICEDESC','Base price to sell this product at.'))
+						->setMaxLength(12)
+				)
+				->push(
+					CurrencyField::create('CostPrice', _t('Product.COSTPRICE', 'Cost Price'))
+						->setDescription(_t('Product.COSTPRICEDESC','Wholesale price before markup.'))
+						->setMaxLength(12)
+				)
+		);
+		//
+		
+		// shipping fields
+		if(Config::inst()->get('ShopConfig','shipping') === true){
+			// physical measurements
+			$weightunit = 'kg'; //TODO: globalise / make custom
+			$lengthunit = 'cm';  //TODO: globalise / make custom
+			$tabset->push(
+				Tab::create(
+					'ShippingTab',
+					_t('Product.SHIPPINGTAB','Shipping')
+				)
+					->push(
+						TextField::create(
+							'Weight',
+							_t('Product.WEIGHT','Weight ({unit})',array('unit' => $weightunit)),
+							'',12
+						)
+					)
+					->push(
+						TextField::create(
+							'Height',
+							_t('Product.HEIGHT', 'Height ({unit})',array('unit' => $lengthunit)),
+							'',12
+						)
+					)
+					->push(
+						TextField::create(
+							'Depth',
+							_t('Product.DEPTH', 'Depth ({unit})',array('unit' => $lengthunit)),
+							'',12
+						)
+					)
+			);
+		}
+		//
+
 		if(!$fields->dataFieldByName('Image')) {
-			$fields->addFieldToTab('Root.Images', 
-				UploadField::create('Image', _t('Product.IMAGE', 'Product Image'))
+			$tabset->push(
+				Tab::create(
+					'ImageTab',
+					_t('Product.IMAGETAB','Images')
+				)
+					->push(
+						UploadField::create('Image', _t('Product.has_one_Image','Product Image'))
+					)
 			);
 		}
 		self::enableCMSFieldsExtensions();
