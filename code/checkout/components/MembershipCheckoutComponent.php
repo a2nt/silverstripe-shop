@@ -15,7 +15,7 @@ class MembershipCheckoutComponent extends CheckoutComponent{
 			if(!$this->passwordvalidator){
 				$this->passwordvalidator = new PasswordValidator();
 				$this->passwordvalidator->minLength(5);
-				$this->passwordvalidator->characterStrength(2,array("lowercase", "uppercase", "digits", "punctuation"));
+				$this->passwordvalidator->characterStrength(2,array('lowercase', 'uppercase', 'digits', 'punctuation'));
 			}
 		}
 	}
@@ -25,7 +25,7 @@ class MembershipCheckoutComponent extends CheckoutComponent{
 		if(Member::currentUserID()){
 			return $fields;
 		}
-		$idfield = Member::get_unique_identifier_field();
+		$idfield = Config::inst()->get('Member','unique_identifier_field');
 		if(!$order->{$idfield} &&
 			($form && !$form->Fields()->fieldByName($idfield))){
 				$fields->push(new TextField($idfield,$idfield)); //TODO: scaffold the correct id field
@@ -39,7 +39,7 @@ class MembershipCheckoutComponent extends CheckoutComponent{
 			return array();
 		}
 		return array(
-			Member::get_unique_identifier_field(),
+			Config::inst()->get('Member','unique_identifier_field'),
 			'Password'
 		);
 	}
@@ -47,10 +47,22 @@ class MembershipCheckoutComponent extends CheckoutComponent{
 	public function getPasswordField(){
 		if($this->confirmed){
 			//relies on fix: https://github.com/silverstripe/silverstripe-framework/pull/2757
-			return ConfirmedPasswordField::create('Password', _t('CheckoutField.PASSWORD','Password'))
+			return BootstrapConfirmedPasswordField::create('Password', _t('CheckoutField.PASSWORD','Password'))
 					->setCanBeEmpty(!Checkout::membership_required());
 		}
-		return PasswordField::create('Password', _t('CheckoutField.PASSWORD','Password'));
+		return PasswordField::create('Password','')
+			->addPlaceHolder(_t('Member.PASSWORD', 'Password'))
+			->prependText('<span class="icon icon-eye-close"></span>')
+			->setAttribute('required','required')
+			->setAttribute('pattern','[a-z 0-9 .-_@#$!^&*()+=]+')
+			->setAttribute('data-minlength','6')
+			->setAttribute('maxlength','30')
+			->addHelpText(
+				sprintf(_t(
+					'BootstrapChangePasswordForm.ALLOWEDSYMBOLS',
+					'Password length: %s - %s. You can use special symbols: %s'
+				),'6','30','.-_@#$!^&amp;*()+=')
+			);
 	}
 
 	public function validateData(Order $order, array $data){
@@ -60,7 +72,8 @@ class MembershipCheckoutComponent extends CheckoutComponent{
 		$result = new ValidationResult();
 		if(Checkout::membership_required() || !empty($data['Password'])){
 			$member = new Member($data);
-			$idval = $data[Member::get_unique_identifier_field()];
+			$idfield = Config::inst()->get('Member','unique_identifier_field');
+			$idval = $data[$idfield];
 			if(ShopMember::get_by_identifier($idval)){
 				$result->error(sprintf(_t("Checkout.MEMBEREXISTS","A member already exists with the %s %s"),$idfield,$idval), $idval);
 			}
@@ -78,7 +91,7 @@ class MembershipCheckoutComponent extends CheckoutComponent{
 		$data = array();
 
 		if($member = Member::currentUser()){
-			$idf = Member::get_unique_identifier_field();
+			$idf = Config::inst()->get('Member','unique_identifier_field');
 			$data[$idf] = $member->{$idf};
 		}
 		return $data;

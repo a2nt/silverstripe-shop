@@ -4,7 +4,7 @@
  * View and edit the cart in a full page.
  * Visitor can continue shopping, or proceed to checkout.
  */
-class CartPage extends Page{
+class CartPage extends BasicPage {
 
 	private static $has_one = array(
 		'CheckoutPage' => 'CheckoutPage',
@@ -24,17 +24,23 @@ class CartPage extends Page{
 		$fields = parent::getCMSFields();
 		if($checkouts = CheckoutPage::get()) {
 			$fields->addFieldToTab('Root.Links',
-				DropdownField::create('CheckoutPageID','Checkout Page',
+				DropdownField::create(
+					'CheckoutPageID',
+					_t('CartPage.CHECKOUTPAGE','Checkout Page'),
 					$checkouts->map("ID","Title")
 				)
 			);
+			$fields->findOrMakeTab('Root.Links')->setTitle(_t('CartPage.LINKS','Links'));
 		}
 		if($pgroups = ProductCategory::get()) {
 			$fields->addFieldToTab('Root.Links',
-				DropdownField::create('ContinuePageID','Continue Product Group Page',
+				DropdownField::create(
+					'ContinuePageID',
+					_t('CartPage.CONTINUEPAGE','Continue Product Group Page'),
 					$pgroups->map("ID","Title")
 				)
 			);
+			$fields->findOrMakeTab('Root.Links')->setTitle(_t('CartPage.LINKS','Links'));
 		}
 		
 		return $fields;
@@ -57,7 +63,7 @@ class CartPage extends Page{
 
 }
 
-class CartPage_Controller extends Page_Controller{
+class CartPage_Controller extends BasicPage_Controller{
 	
 	private static $url_segment = 'cart';
 	private static $allowed_actions = array(

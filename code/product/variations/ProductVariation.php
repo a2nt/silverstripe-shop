@@ -29,7 +29,7 @@ class ProductVariation extends DataObject implements Buyable{
 		'Live'
 	);
 	private static $extensions = array(
-		"Versioned('Live')"
+		'Versioned("Live")'
 	);
 	private static $summary_fields = array(
 		'InternalItemID' => 'Product Code',
@@ -42,11 +42,11 @@ class ProductVariation extends DataObject implements Buyable{
 		'InternalItemID'
 	);
 
-	private static $singular_name = "Variation";
-	private static $plural_name = "Variations";
+	private static $singular_name = 'Variation';
+	private static $plural_name = 'Variations';
 
-	private static $default_sort = "InternalItemID";
-	private static $order_item = "ProductVariation_OrderItem";
+	private static $default_sort = 'InternalItemID';
+	private static $order_item = 'ProductVariation_OrderItem';
 
 	function getCMSFields() {
 		$fields = FieldList::create(
@@ -70,20 +70,25 @@ class ProductVariation extends DataObject implements Buyable{
 					$fields->push($field);
 				}else{
 					$fields->push(LiteralField::create('novalues'.$attribute->Name,
-						"<p class=\"message warning\">".
-							$attribute->Name." has no values to choose from.
-							You can create them in the \"Products\" &#62; 
-							\"Product Attribute Type\" section of the CMS.
-						</p>"
+						'<p class="message warning">'
+							._t(
+								'ProductVariation.HASNOVALTOCHOOSE',
+								'{attr} has no values to choose from. You can create them in the "Products" &#62; "Product Attribute Type" section of the CMS.',
+								array('attr' => $attribute->Name)
+							)
+						.'</p>'
 					));
 				}
 				//TODO: allow setting custom values here, rather than visiting the products section
 			}
 		}else{
 			$fields->push(LiteralField::create('savefirst',
-				"<p class=\"message warning\">".
-					"You can choose variation attributes after saving for the first time
-				</p>"
+				'<p class="message warning">'
+					._t(
+						'ProductVariation.BEFORESAVENOTE',
+						'You can choose variation attributes after saving for the first time'
+					)
+				.'</p>'
 			));
 		}
 		$fields->push(
@@ -94,11 +99,26 @@ class ProductVariation extends DataObject implements Buyable{
 		return $fields;
 	}
 	
+	function generateReference(){
+		$ref = 'PV'.strtoupper(substr(md5(uniqid(mt_rand(),true)),0,8));
+		$this->extend('generateReference',$reference);
+
+		//prevent generating references that are the same
+		$refs = ProductVariation::get()->filter('InternalItemID',$ref);
+		if($refs->exists()){
+			$ref .= $refs->count();
+		}
+		$this->InternalItemID = $ref;
+	}
+
 	/**
 	 * Save selected attributes - somewhat of a hack.
 	 */
 	function onBeforeWrite(){
 		parent::onBeforeWrite();
+		if(!$this->getField('Reference')){
+			$this->generateReference();
+		}
 		if(isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes'])){
 			$this->AttributeValues()->setByIDList(array_values($_POST['ProductAttributes']));
 		}
@@ -188,7 +208,7 @@ class ProductVariation extends DataObject implements Buyable{
 		}
 		if (!$price) $price = 0;
 		//TODO: this is not ideal, because prices manipulations will not happen in a known order
-		$this->extend("updateSellingPrice",$price); 
+		$this->extend('updateSellingPrice',$price); 
 		return $price;
 	}
 
@@ -210,7 +230,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		'ProductVariation' => 'ProductVariation'
 	);
 	
-	private static $buyable_relationship = "ProductVariation";
+	private static $buyable_relationship = 'ProductVariation';
 	
 	/**
 	 * Overloaded relationship, for getting versioned variations

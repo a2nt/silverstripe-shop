@@ -1,17 +1,11 @@
-<% require themedCSS(checkout) %>
-<h1 class="pageTitle">$Title</h1>
+<% include Content %>
 <div id="Checkout">
-	<div class="typography">
-		<% if Content %>
-			$Content
-		<% end_if %>
-	</div>
-	<% if Cart %>
-		<% with Cart %>
+	<% if $Cart %>
+		<% with $Cart %>
 			<% include Cart %>
 		<% end_with %>
-		<% if Cart.Items %>$OrderForm<% end_if %>
+		<% if $Cart.Items %>$OrderForm<% end_if %>
 	<% else %>
-		<p class="message warning"><% _t('CheckoutPage.ss.CARTEMPTY','Your cart is empty.') %></p>
+		<div class="alert alert-error"><%t CheckoutPage.CARTEMPTY 'Your cart is empty.' %></p>
 	<% end_if %>
 </div>

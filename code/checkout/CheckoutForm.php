@@ -1,6 +1,6 @@
 <?php
 
-class CheckoutForm extends Form {
+class CheckoutForm extends BootstrapForm {
 	
 	protected $config, $redirectlink;
 
@@ -8,14 +8,18 @@ class CheckoutForm extends Form {
 		$this->config = $config;
 		$fields = $config->getFormFields();
 
-		$actions = new FieldList(
+		$actions = FieldList::create(
 			FormAction::create(
 				'checkoutSubmit',
-				_t('CheckoutForm','Proceed to payment')
-			)
+				_t('CheckoutForm.PROCEEDTOPAYMENT','Proceed to payment')
+				.' <span class="icon icon-chevron-right"></span>'
+			)->addExtraClass(Page_Controller::getBtnClass())
 		);
 		$validator = new CheckoutComponentValidator($this->config);
 		parent::__construct($controller, $name, $fields, $actions, $validator);
+		$this->addExtraClass('vcard-input');
+		$this->setAttribute('x-autocompletetype','registration');
+		$this->setAttribute('autocomplete','on');
 		$this->loadDataFrom($this->config->getData(), Form::MERGE_IGNORE_FALSEISH);
 		if($sessiondata = Session::get("FormInfo.{$this->FormName()}.data")){
 			$this->loadDataFrom($sessiondata, Form::MERGE_IGNORE_FALSEISH);

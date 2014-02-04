@@ -8,7 +8,7 @@
  *
  * @package shop
  */
-class CheckoutPage extends Page {
+class CheckoutPage extends BasicPage {
 
 	private static $db = array(
 		'PurchaseComplete' => 'HTMLText'
@@ -45,16 +45,20 @@ class CheckoutPage extends Page {
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->addFieldsToTab('Root.Main', array(
-			ElEditorField::create('PurchaseComplete', 'Purchase Complete', 4)
-				->setDescription("This message is included in reciept email, ".
-								"after the customer submits the checkout")
+			ElEditorField::create(
+				'PurchaseComplete',
+				_t('CheckoutPage.PURCHASECOMPLETE','Purchase Complete'),
+			4)
+				->setDescription(
+					_t('CheckoutPage.PURCHASECOMPLETEDESC','This message is included in reciept email, after the customer submits the checkout')
+				)
 		),'Metadata');
 		return $fields;
 	}
 	
 }
 
-class CheckoutPage_Controller extends Page_Controller {
+class CheckoutPage_Controller extends BasicPage_Controller {
 
 	private static $allowed_actions = array(
 		'OrderForm',

@@ -27,8 +27,8 @@ class Zone extends DataObject{
 		$where = RegionRestriction::address_filter($address);
 		return Zone::get()->where($where)
 					->sort('PostalCode DESC, City DESC, State DESC, Country DESC')
-					->innerJoin("ZoneRegion","\"Zone\".\"ID\" = \"ZoneRegion\".\"ZoneID\"")
-					->innerJoin("RegionRestriction","\"ZoneRegion\".\"ID\" = \"RegionRestriction\".\"ID\"");
+					->innerJoin('ZoneRegion','"Zone"."ID" = "ZoneRegion"."ZoneID"')
+					->innerJoin('RegionRestriction','"ZoneRegion"."ID" = "RegionRestriction"."ID"');
 	}
 	
 	/*
@@ -37,11 +37,11 @@ class Zone extends DataObject{
 	static function cache_zone_ids(Address $address){
 		if($zones = self::get_zones_for_address($address)){
 			$ids = $zones->map('ID','ID')->toArray();
-			Session::set("MatchingZoneIDs",implode(",",$ids));
+			Session::set('MatchingZoneIDs',implode(',',$ids));
 			return $ids;
 		}
-		Session::set("MatchingZoneIDs",null);
-		Session::clear("MatchingZoneIDs");
+		Session::set('MatchingZoneIDs',null);
+		Session::clear('MatchingZoneIDs');
 		return null;
 	}
 	
@@ -49,18 +49,23 @@ class Zone extends DataObject{
 	 * Get cached ids as array
 	 */
 	static function get_zone_ids(){
-		if($ids = Session::get("MatchingZoneIDs")){
-			return explode(",",$ids);
+		if($ids = Session::get('MatchingZoneIDs')){
+			return explode(',',$ids);
 		}
 		return null;
 	}
 	
 	function getCMSFields(){
 		$fields = parent::getCMSFields();
-		$fields->fieldByName("Root")->removeByName("Regions");
+		$fields->fieldByName('Root')->removeByName('Regions');
 		if($this->isInDB()){
-			$regionsTable = new GridField("Regions", "Regions", $this->Regions(), new GridFieldConfig_RelationEditor());
-			$fields->addFieldsToTab("Root.Main", $regionsTable);
+			$regionsTable = GridField::create(
+				'Regions',
+				_t('Zone.has_many_Regions','Regions'),
+				$this->Regions(),
+				new GridFieldConfig_RelationEditor()
+			);
+			$fields->addFieldsToTab('Root.Main', $regionsTable);
 		}
 		return $fields;
 	}

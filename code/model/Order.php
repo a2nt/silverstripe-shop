@@ -522,16 +522,15 @@ class Order extends DataObject {
 	 * Create a unique reference identifier string for this order.
 	 */
 	function generateReference(){
-		$reference = str_pad($this->ID,self::$reference_id_padding,'0',STR_PAD_LEFT);
+		$ref = 'O'.strtoupper(substr(md5(uniqid(mt_rand(),true)),0,8));
 		$this->extend('generateReference',$reference);
-		$candidate = $reference;
+
 		//prevent generating references that are the same
-		$count = 0;
-		while(DataObject::get_one('Order',"\"Reference\" = '$candidate'")){
-			$count++;
-			$candidate = $reference."".$count;
+		$refs = GatewayMessage::get()->filter('Reference',$ref);
+		if($refs->exists()){
+			$ref .= $refs->count();
 		}
-		$this->Reference = $candidate;
+		$this->Reference = $ref;
 	}
 	
 	/**

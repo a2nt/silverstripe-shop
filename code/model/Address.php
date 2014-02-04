@@ -58,14 +58,58 @@ class Address extends DataObject{
 	);
 
 	function getFrontEndFields($params = null){
-		$fields = new FieldList(
-			$this->getCountryField(),
-			$addressfield = TextField::create('Address', _t('Address.ADDRESS','Address')),
-			$address2field = TextField::create('AddressLine2', _t('Address.ADDRESSLINE2','&nbsp;')),
-			$cityfield = TextField::create('City', _t('Address.CITY','City')),
-			$statefield = TextField::create('State', _t('Address.STATE','State')),
-			$postcodefield = TextField::create('PostalCode', _t('Address.POSTALCODE','Postal Code')),
-			$phonefield = TextField::create('Phone', _t('Address.PHONE','Phone Number'))
+		$fields = FieldList::create(
+			LiteralField::create('Anchor',''),
+			CompositeField::create(
+				CompositeField::create(
+					$this->getCountryField(),
+					$cityfield = TextField::create('City','')
+						->addPlaceHolder(_t('Address.CITY','City'))
+						->setAttribute('data-minlength','2')
+						->setAttribute('maxlength','30')
+						->prependText('<span class="icon icon-envelope"></span>')
+						->addExtraClass('city locality')
+						->setAttribute('x-autocompletetype','city'),
+					$statefield = TextField::create('State','')
+						->addPlaceHolder(_t('Address.STATE','State'))
+						->setAttribute('data-minlength','2')
+						->setAttribute('maxlength','30')
+						->prependText('<span class="icon icon-envelope"></span>')
+						->addExtraClass('state province region administrative-area')
+						->setAttribute('x-autocompletetype','administrative-area')
+				)->addExtraClass('pull-left'),
+				CompositeField::create(
+					$addressfield = TextField::create('Address','')
+						->addPlaceHolder(_t('Address.ADDRESS','ex. Road 500'))
+						->setAttribute('data-minlength','2')
+						->setAttribute('maxlength','30')
+						->prependText('<span class="icon icon-envelope"></span>')
+						->addExtraClass('street-address address-line1')
+						->setAttribute('x-autocompletetype','street-address'),
+					$address2field = TextField::create('AddressLine2','')
+						->addPlaceHolder(_t('Address.ADDRESSLINE2','ex. h.1024, ap.50'))
+						->setAttribute('maxlength','30')
+						->prependText('<span class="icon icon-envelope"></span>')
+						->addExtraClass('address-line2 address-line3')
+						->setAttribute('x-autocompletetype','address-line1 address-line2 address-line3'),
+					$postcodefield = TextField::create('PostalCode','')
+						->addPlaceHolder(_t('Address.POSTALCODE','Postal Code'))
+						->setAttribute('data-minlength','4')
+						->setAttribute('maxlength','7')
+						->prependText('<span class="icon icon-envelope"></span>')
+						->addExtraClass('postal-code')
+						->setAttribute('x-autocompletetype','postal-code'),
+					$phonefield = TextField::create('Phone','')
+						->addPlaceHolder(_t('Page.CONTACTPHONELABEL','Your Phone Number'))
+						->prependText('<span class="icon icon-plus"></span>')
+						->setAttribute('data-mask','999-999-9999')
+						->setAttribute('pattern','[0-9]{1,3}-[0-9]{1,3}-[0-9]{1,4}')
+						->setAttribute('maxlength','12')
+						->addExtraClass('tel phone-full')
+						->setAttribute('x-autocompletetype','phone-full')
+				)->addExtraClass('pull-right')
+			)->addExtraClass('address-details clear-fix')
+
 		);
 		if(isset($params['addfielddescriptions']) && !empty($params['addfielddescriptions'])){
 			$addressfield->setDescription(_t("Address.ADDRESSHINT","street / thoroughfare number, name, and type or P.O. Box"));
@@ -80,10 +124,14 @@ class Address extends DataObject{
 
 	function getCountryField(){
 		$countries = SiteConfig::current_site_config()->getCountriesList();
-		$countryfield = new ReadonlyField("Country",_t('Address.COUNTRY','Country'));
+		$countryfield = ReadonlyField::create("Country",_t('Address.COUNTRY','Country'));
 		if(count($countries) > 1){
-			$countryfield = new DropdownField("Country",_t('Address.COUNTRY','Country'), $countries);
-			$countryfield->setHasEmptyDefault(true);
+			$countryfield = CountryDropdownField::create("Country",'', $countries)
+				->setEmptyString(_t('Address.CHOOSECOUNTRY','(Choose Country)'))
+				->setHasEmptyDefault(true)
+				->addExtraClass('country-name');
+		}else{
+			$countryfield->setValue(array_values($countries)[0]);
 		}
 		return $countryfield;
 	}

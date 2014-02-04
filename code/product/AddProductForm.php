@@ -9,7 +9,7 @@ class AddProductForm extends Form{
 	 */
 	protected $saveablefields = array();
 	
-	function __construct($controller, $name = "AddProductForm"){
+	function __construct($controller, $name = 'AddProductForm'){
 		$fields = new FieldList();
 		
 		if($this->maxquantity){
@@ -19,18 +19,34 @@ class AddProductForm extends Form{
 				$values[$count] = $count;
 				$count++;
 			}
-			$fields->push(new DropdownField('Quantity','Quantity',$values,1));
+			$fields->push(
+				DropdownField::create(
+					'Quantity',
+					_t('AddProductForm.QUANTITY','Quantity'),
+					$values,
+					1
+				)
+			);
 		}else{
-			$fields->push(new NumericField('Quantity','Quantity',1));
+			$fields->push(
+				NumericField::create(
+					'Quantity',
+					_t('AddProductForm.QUANTITY','Quantity'),
+					1
+				)
+			);
 		}
 		$actions = new FieldList(
-			new FormAction('addtocart',_t("AddProductForm.ADDTOCART",'Add to Cart'))
+			FormAction::create(
+				'addtocart',
+				_t('AddProductForm.ADDTOCART','Add to Cart')
+			)
 		);
 		$validator = new RequiredFields(array(
 			'Quantity'
 		));
 		parent::__construct($controller,$name,$fields,$actions,$validator);
-		$this->addExtraClass("addproductform");
+		$this->addExtraClass('addproductform');
 	}
 	
 	/**
@@ -61,7 +77,7 @@ class AddProductForm extends Form{
 		if($this->controller->dataRecord instanceof Buyable){
 			return $this->controller->dataRecord;
 		}
-		return DataObject::get_by_id('Product',(int) $this->request->postVar("BuyableID")); //TODO: get buyable
+		return DataObject::get_by_id('Product',(int) $this->request->postVar('BuyableID')); //TODO: get buyable
 	}
 	
 }
