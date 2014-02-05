@@ -93,23 +93,24 @@ class Product extends Page implements Buyable{
 	function getCMSFields() {
 		self::disableCMSFieldsExtensions();
 		$fields = parent::getCMSFields();
-		$fields->fieldByName('Root.Main.Title')->setTitle(_t('Product.PAGETITLE','Product Title'));
-		//general fields
+		$fields->fieldByName('Root.Main.Title')->setTitle(_t('Product.db_Title','Product Title'));
+		
+		// general fields
 		$fields->addFieldsToTab('Root.Main',array(
 			TextField::create(
 				'InternalItemID',
-				_t('Product.CODE', 'Product Code/SKU'),
+				_t('Product.db_InternalItemID', 'Product Code/SKU'),
 				'', 30
 			),
 			DropdownField::create(
 				'ParentID',
-				_t('Product.CATEGORY','Category'),
+				_t('Product.db_ParentID','Category'),
 				$this->categoryoptions()
 			)
 				->setDescription(_t('Product.CATEGORYDESCRIPTION','This is the parent page or default category.')),
 			ListBoxField::create(
 				'ProductCategories',
-				_t('Product.ADDITIONALCATEGORIES','Additional Categories'),
+				_t('Product.many_many_ProductCategories','Additional Categories'),
 				ProductCategory::get()->map('ID','NestedTitle')->toArray()
 			)
 				->setMultiple(true),
@@ -120,29 +121,31 @@ class Product extends Page implements Buyable{
 			),
 			CheckboxField::create(
 				'FeaturedProduct',
-				_t('Product.FEATURED', 'Featured Product')
+				_t('Product.db_FeaturedProduct', 'Featured Product')
 			),
 			CheckboxField::create(
 				'AllowPurchase',
-				_t('Product.ALLOWPURCHASE', 'Allow product to be purchased'),
+				_t('Product.db_AllowPurchase', 'Allow product to be purchased'),
 				1
 			)
 		),'Content');
+		//
 
 		$tabset = $fields->findOrMakeTab('Root');
-		//pricing
+		
+		// pricing fields
 		$tabset->push(
 			Tab::create(
 				'PricingTab',
 				_t('Product.PRICINGTAB','Pricing')
 			)
 				->push(
-					TextField::create('BasePrice', _t('Product.PRICE', 'Price'))
+					CurrencyField::create('BasePrice', _t('Product.PRICE', 'Price'))
 						->setDescription(_t('Product.PRICEDESC','Base price to sell this product at.'))
 						->setMaxLength(12)
 				)
 				->push(
-					TextField::create('CostPrice', _t('Product.COSTPRICE', 'Cost Price'))
+					CurrencyField::create('CostPrice', _t('Product.COSTPRICE', 'Cost Price'))
 						->setDescription(_t('Product.COSTPRICEDESC','Wholesale price before markup.'))
 						->setMaxLength(12)
 				)
@@ -188,10 +191,10 @@ class Product extends Page implements Buyable{
 			$tabset->push(
 				Tab::create(
 					'ImageTab',
-					_t('Product.IMAGETAB','Shipping')
+					_t('Product.IMAGETAB','Images')
 				)
 					->push(
-						UploadField::create('Image', _t('Product.IMAGE', 'Product Image'))
+						UploadField::create('Image', _t('Product.has_one_Image','Product Image'))
 					)
 			);
 		}

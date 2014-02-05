@@ -45,7 +45,7 @@
 	<% else %>
 		<% if $canPurchase %>
 		<div class="add">
-			<a href="$addLink" title="<%t Product.ADDONE 'Add &quot;{name}&quot; to Cart' name=$Title %>">
+			<a href="$addLink" title="<%t Product.ADD 'Add &quot;{name}&quot; to Cart' name=$Title %>">
 				<%t Product.ADDLINK 'Add to Cart' %>
 			</a>
 		</div>

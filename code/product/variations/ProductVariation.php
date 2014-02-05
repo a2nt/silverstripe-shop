@@ -52,11 +52,11 @@ class ProductVariation extends DataObject implements Buyable{
 		$fields = FieldList::create(
 			TextField::create(
 				'InternalItemID',
-				_t('ProductVariation.CODE','Product Code')
+				_t('ProductVariation.db_InternalItemID','Product Code')
 			),
 			TextField::create(
 				'Price',
-				_t('ProductVariation.PRICE','Price')
+				_t('ProductVariation.db_Price','Price')
 			)
 		);
 		//add attributes dropdowns
