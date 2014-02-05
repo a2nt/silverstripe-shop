@@ -187,36 +187,6 @@ class Product extends Page implements Buyable{
 		}
 		//
 
-		//physical measurements
-		$weightunit = 'kg'; //TODO: globalise / make custom
-		$lengthunit = 'cm';  //TODO: globalise / make custom
-		$tabset->push(
-			Tab::create(
-				'ShippingTab',
-				_t('Product.SHIPPINGTAB','Shipping')
-			)
-				->push(
-					TextField::create(
-						'Weight',
-						_t('Product.WEIGHT','Weight ({unit})',array('unit' => $weightunit)),
-						'',12
-					)
-				)
-				->push(
-					TextField::create(
-						'Height',
-						_t('Product.HEIGHT', 'Height ({unit})',array('unit' => $lengthunit)),
-						'',12
-					)
-				)
-				->push(
-					TextField::create(
-						'Depth',
-						_t('Product.DEPTH', 'Depth ({unit})',array('unit' => $lengthunit)),
-						'',12
-					)
-				)
-		);
 		if(!$fields->dataFieldByName('Image')) {
 			$tabset->push(
 				Tab::create(
