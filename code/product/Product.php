@@ -60,7 +60,7 @@ class Product extends Page implements Buyable{
 
 	private static $singular_name = 'Product';
 	private static $plural_name = 'Products';
-	private static $icon = 'shop/images/icons/package';
+	private static $icon = 'shop/img/icons/package';
 	private static $default_parent = 'ProductCategory';
 	private static $default_sort = '"Title" ASC';
 	
