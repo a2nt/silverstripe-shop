@@ -45,7 +45,11 @@ class CheckoutPage extends BasicPage {
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->addFieldsToTab('Root.Main', array(
+<<<<<<< HEAD
 			HtmlEditorField::create(
+=======
+			ElEditorField::create(
+>>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
 				'PurchaseComplete',
 				_t('CheckoutPage.PURCHASECOMPLETE','Purchase Complete'),
 			4)
