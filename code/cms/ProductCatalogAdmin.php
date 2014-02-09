@@ -11,17 +11,10 @@ class ProductCatalogAdmin extends ModelAdmin {
 	private static $menu_title = 'Catalog';
 	private static $menu_priority = 2;
 	private static $menu_icon = 'shop/img/icons/catalog-admin.png';
-<<<<<<< HEAD
 
-=======
-	private static $managed_models = array(
-		"Product","ProductCategory","ProductAttributeType"
-	);
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
 	private static $model_importers = array(
 		'Product' => 'ProductBulkLoader'	
 	);
-<<<<<<< HEAD
 	
 	public function getManagedModels() {
 		$models = array();
@@ -50,9 +43,5 @@ class ProductCatalogAdmin extends ModelAdmin {
 		}
 		
 		return $models;
-=======
-	public function alternateAccessCheck(){
-		return false;
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
 	}
 }

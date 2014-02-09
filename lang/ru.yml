@@ -68,11 +68,7 @@ ru:
   db_IPAddress: 'IP-адрес'
   db_Notes: 'Заметки'
   db_Paid: 'Оплачен'
-<<<<<<< HEAD
   db_Placed: 'Дата'
-=======
-  db_Placed: 'Размещён'
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
   db_Printed: 'Распечатан'
   db_ReceiptSent: 'Отправлен счёт'
   db_Reference: 'Индефикатор'
@@ -88,7 +84,6 @@ ru:
   has_one_ShippingAddress: 'Адрес доставки'
   PLURALNAME: 'Заказы'
   SINGULARNAME: 'Заказ'
-<<<<<<< HEAD
   EMAILSUBJECT: 'Информация о заказе #{reference}'
   DATEFROM: 'Начиная с даты'
   DATETO: 'По дату'
@@ -104,8 +99,6 @@ ru:
   TITLE: 'Счёт'
   STATUSTITLE: 'Статус заказа обновлён'
   STATUSCHANGE: 'Статус изменён на "{status}" для заказа #'
-=======
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
  ZoneAdmin:
   MENUTITLE: 'Регионы'
  Zone:
@@ -123,7 +116,6 @@ ru:
   PLURALNAME: 'Личный кабинет'
   SINGULARNAME: 'Личный кабинет'
  Cart:
-<<<<<<< HEAD
   ADDRESS: 'Адреса'
   AMOUNT: 'Сумма'
   BILLTO: 'Адрес выставления счёта'
@@ -143,30 +135,17 @@ ru:
   PAYMENTNOTE: 'Примечание'
   PAYMENTS: 'Транзакции'
   PAYMENTSTATUS: 'Статус'
-=======
-  CheckoutClick: 'Нажмите чтобы перейти к оплате'
-  CheckoutGoTo: 'Перейти к оплате'
-  HEADLINE: 'Ваша Корзина'
-  ITEMSTOTAL: 'В корзине <a href="{url}">{count}</a> наименований(е)'
-  NOITEMS: 'Ваша корзина пуста'
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
   PRODUCT: 'Название'
   QUANTITY: 'Кол-во'
   READMORE: 'Подробнее о &quot;{name}&quot;'
   REMOVE: 'Удалить'
   REMOVEALL: 'Удалить все &quot;{name}&quot; из корзины'
-<<<<<<< HEAD
   SHIPTO: 'Адрес доставки'
   SKU: 'АРТ'
   SUBTOTAL: ' '
   TABLESUMMARY: 'В этой форме отображено всё содержимое вашей корзины и дополнительные опции вашего заказа.'
   TOTAL: 'Итого'
   TOTALOUTSTANDING: 'Остаток'
-=======
-  SUBTOTAL: ' '
-  TABLESUMMARY: 'В этой форме отображено всё содержимое вашей корзины и дополнительные опции вашего заказа.'
-  TOTAL: 'Итого'
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
   TOTALPRICE: 'Сумма'
   UNITPRICE: 'Стоимость'
   VARIATION: 'Изменить'
@@ -186,7 +165,6 @@ ru:
   TITLE: 'Ваша Корзина'
  CheckoutPage:
   CARTEMPTY: 'Ваша корзина пуста'
-<<<<<<< HEAD
   MAKEPAYMENT: 'Оплатить'
   PLURALNAME: 'Страница оплаты'
   PURCHASECOMPLETE: 'Покупка совершена'
@@ -204,14 +182,10 @@ ru:
   PASSWORD: 'Пароль'
  Checkout:
   MEMBEREXISTS: 'Пользователь с {field} {value} уже существует, укажите другой {field}.'
-=======
   PLURALNAME: 'Страница оплаты'
   PURCHASECOMPLETE: 'Покупка совершена'
   PURCHASECOMPLETEDESC: 'Сообщение по завершению покупки, будет включено в счёт отправленный покупателю на email.'
   SINGULARNAME: 'Страница оплаты'
- CheckoutForm:
-  PROCEEDTOPAYMENT: 'Перейти к оплате'
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
  Address:
   ADDRESS: '(Улица/Дом/Строение)'
   ADDRESSLINE2: '(Квартира/Офис/Этаж)'
@@ -224,14 +198,11 @@ ru:
   SEPARATEBILLINGADDRESS: 'Адрес выставления счёта отличается от адреса доставки'
   SHIPPINGTYPE: 'Адрес доставки'
   STATE: '(Регион/Область/Край)'
-<<<<<<< HEAD
-=======
  CheckoutField:
   EMAIL: 'Email'
   FIRSTNAME: 'Имя'
   NOTES: 'Пожелания / Комментарии'
   SURNAME: 'Фамилия'
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
  MemberForm:
   DETAILSSAVED: 'Данные сохранены'
  OrderAttribute:
@@ -243,12 +214,9 @@ ru:
   PLURALNAME: 'Оплаты'
   SINGULARNAME: 'Оплата'
   SUBTOTAL: ' '
-<<<<<<< HEAD
   db_Gateway: 'Шлюз'
   db_Created: 'Дата'
   db_Status: 'Статус'
-=======
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
  ChequePayment:
   MESSAGE: 'Оплата переводом. Внимание: продукция не будет отправлена до тех пор пока не будет получен перевод.'
   PLURALNAME: 'Оплаты переводом'
@@ -279,7 +247,6 @@ ru:
   SINGULARNAME: 'Весовой модификатор'
  WorldpayPayment:
   PLURALNAME: 'Оплаты Worldpay'
-<<<<<<< HEAD
   SINGULARNAME: 'Оплата Worldpay'
  ShopPeriodReport:
   DAY: 'День'
@@ -317,6 +284,3 @@ ru:
   ShopGROUP: 'Каталог'
   TITLE: 'Продукция Акции(Новинки,Спец.Предложения)'
   WEIGHT: 'Вес'
-=======
-  SINGULARNAME: 'Оплата Worldpay'
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef

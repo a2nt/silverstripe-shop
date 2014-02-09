@@ -109,15 +109,9 @@ class AccountFormValidator extends RequiredFields {
 	 */
 	public function php($data){
 		$valid = parent::php($data);
-<<<<<<< HEAD
 		$field = Config::inst()->get('Member','unique_identifier_field');
 		if(isset($data[$field])){
 			$uid = $data[Config::inst()->get('Member','unique_identifier_field')];
-=======
-		$field = Member::get_unique_identifier_field();
-		if(isset($data[$field])){
-			$uid = $data[Member::get_unique_identifier_field()];
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
 			$member = Member::currentUser();
 			//can't be taken
 			$otherMember = Member::get()->filter($field,$uid)->where('ID != '.$member->ID);

@@ -9,11 +9,7 @@ class CheckoutForm extends BootstrapForm {
 		$fields = $config->getFormFields();
 
 		$actions = FieldList::create(
-<<<<<<< HEAD
 			$btn = FormAction::create(
-=======
-			FormAction::create(
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
 				'checkoutSubmit',
 				_t('CheckoutForm.PROCEEDTOPAYMENT','Proceed to payment')
 				.' <span class="icon icon-chevron-right"></span>'

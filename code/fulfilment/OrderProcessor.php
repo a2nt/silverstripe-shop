@@ -210,7 +210,6 @@ class OrderProcessor{
 	* @param $copyToAdmin - true by default, whether it should send a copy to the admin
 	*/
 	function sendEmail($emailClass, $copyToAdmin = true) {
-<<<<<<< HEAD
 		$sitecconfig = SiteConfig::current_site_config();
 		if(!$sitecconfig->Email){
 			$from = ShopConfig::config()->email_from ? ShopConfig::config()->email_from : Config::inst()->get('Email','admin_email');
@@ -218,9 +217,6 @@ class OrderProcessor{
 			$from = $sitecconfig->Email;
 		}
 
-=======
-		$from = ShopConfig::config()->email_from ? ShopConfig::config()->email_from : Config::inst()->get('Email','admin_email');
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
 		$to = $this->order->getLatestEmail();
 		$subject = _t('Order.EMAILSUBJECT','Shop Sale Information #{reference}',array('reference' => $this->order->Reference));
 		$purchaseCompleteMessage = DataObject::get_one('CheckoutPage')->PurchaseComplete;
@@ -229,11 +225,7 @@ class OrderProcessor{
 		$email->setTo($to);
 		$email->setSubject($subject);
 		if($copyToAdmin){
-<<<<<<< HEAD
 			$email->setBcc($from);//Config::inst()->get('Email','admin_email'));
-=======
-			$email->setBcc(Config::inst()->get('Email','admin_email'));
->>>>>>> 75f5fd7fd4c0ddcb5320b96839df4d3fd54d2cef
 		}
 		$email->populateTemplate(array(
 			'PurchaseCompleteMessage' => $purchaseCompleteMessage,
