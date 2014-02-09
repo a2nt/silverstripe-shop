@@ -19,33 +19,65 @@ class OrderItem extends OrderAttribute {
 		'Total' => 'Currency'
 	);
 
-	private static $searchable_fields = array(
-		'OrderID' => array(
-			'title' => 'Order ID',
-			'field' => 'TextField'
-		),
-		"Title" => "PartialMatchFilter",
-		"TableTitle" => "PartialMatchFilter",
-		"CartTitle" => "PartialMatchFilter",
-		"UnitPrice",
-		"Quantity",
-		"Total"
-	);
+	public function searchableFields(){
+		return array(
+			'OrderReference' => array(
+				'title' => _t('OrderItem.ORDERREFERENCE','Order Reference'),
+				'field' => 'TextField'
+			),
+			'Title' => array(
+				'title' => _t('OrderItem.TITLE','Title'),
+				'filter' => 'PartialMatchFilter'
+			),
+			'TableTitle' => array(
+				'title' => _t('OrderItem.TITLE','Title'),
+				'filter' => 'PartialMatchFilter'
+			),
+			'CartTitle' => array(
+				'title' => _t('OrderItem.TITLE','Title'),
+				'filter' => 'PartialMatchFilter'
+			),
+			'UnitPrice' => array(
+				'title' => _t('OrderItem.db_UnitPrice','Unit Price'),
+				'filter' => 'ExactMatchFilter'
+			),
+			'Quantity' => array(
+				'title' => _t('OrderItem.db_Quantity','Quantity'),
+				'filter' => 'ExactMatchFilter'
+			),
+			'Total' => array(
+				'title' => _t('OrderItem.db_Total','Total'),
+				'filter' => 'ExactMatchFilter'
+			)
+		);
+	}
 
-	private static $summary_fields = array(
-		"Order.ID" => "Order ID",
-		"TableTitle" => "Title",
-		"UnitPrice" => "Unit Price" ,
-		"Quantity" => "Quantity" ,
-		"Total" => "Total Price" ,
-	);
+	public function summaryFields(){
+		return array(
+			'Order.Reference' =>  array(
+				'title' => _t('OrderItem.ORDERREFERENCE','Order Reference')
+			),
+			'TableTitle' =>  array(
+				'title' => _t('OrderItem.TITLE','Title')
+			),
+			'UnitPrice' =>  array(
+				'title' => _t('OrderItem.db_UnitPrice','Unit Price')
+			),
+			'Quantity' =>  array(
+				'title' => _t('OrderItem.db_Quantity','Quantity')
+			),
+			'Total' =>  array(
+				'title' => _t('OrderItem.db_Total','Total Price')
+			),
+		);
+	}
 	
 	private static $required_fields = array();
-	private static $buyable_relationship = "Product";
+	private static $buyable_relationship = 'Product';
 	
-	private static $singular_name = "Order Item";
-	private static $plural_name = "Order Items";
-	private static $default_sort = "\"Created\" DESC";
+	private static $singular_name = 'Order Item';
+	private static $plural_name = 'Order Items';
+	private static $default_sort = '"Created" DESC';
 
 	/**
 	 * Get the buyable object related to this item.
@@ -124,7 +156,7 @@ class OrderItem extends OrderAttribute {
 		if($required){
 			foreach($required as $field){
 				if($this->has_one($field)){
-					$field = $field."ID"; //add ID to hasones
+					$field = $field.'ID'; //add ID to hasones
 				}
 				$unique[$field] = $this->$field;
 			}
@@ -168,7 +200,7 @@ class OrderItem extends OrderAttribute {
 	}
 
 	function TableTitle() {
-		return $this->i18n_singular_name();
+		return $this->Buyable()->Title?$this->Buyable()->Title:$this->i18n_singular_name();
 	}
 
 	function QuantityField(){

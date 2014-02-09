@@ -21,12 +21,6 @@ AccountPage_Controller:
 Member:
   extensions:
     - ShopMember
-Image:
-  extensions:
-    - Product_Image
-Product:
-  extensions:
-    - ProductVariationsExtension
 Payment:
   extensions:
     - ShopPayment

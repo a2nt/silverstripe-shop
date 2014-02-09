@@ -78,9 +78,9 @@ class ShopAccountFormValidator extends RequiredFields{
 	 */
 	function php($data){
 		$valid = parent::php($data);
-		$field = Member::get_unique_identifier_field();
+		$field = Config::inst()->get('Member','unique_identifier_field');
 		if(isset($data[$field])){
-			$uid = $data[Member::get_unique_identifier_field()];
+			$uid = $data[Config::inst()->get('Member','unique_identifier_field')];
 			$currentmember = Member::currentUser();
 			//can't be taken
 			if(DataObject::get_one('Member',"$field = '$uid' AND ID != ".$currentmember->ID)){

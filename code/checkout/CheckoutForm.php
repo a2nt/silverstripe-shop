@@ -9,12 +9,20 @@ class CheckoutForm extends BootstrapForm {
 		$fields = $config->getFormFields();
 
 		$actions = FieldList::create(
-			FormAction::create(
+			$btn = FormAction::create(
 				'checkoutSubmit',
 				_t('CheckoutForm.PROCEEDTOPAYMENT','Proceed to payment')
 				.' <span class="icon icon-chevron-right"></span>'
 			)->addExtraClass(Page_Controller::getBtnClass())
 		);
+		
+		if(Config::inst()->get('ShopConfig','payment') != true){
+			$btn->setTitle(
+				'<span class="icon icon-ok"></span> '.
+				_t('CheckoutForm.PLACEORDER','Place Order')
+			);
+		}
+
 		$validator = new CheckoutComponentValidator($this->config);
 		parent::__construct($controller, $name, $fields, $actions, $validator);
 		$this->addExtraClass('vcard-input');

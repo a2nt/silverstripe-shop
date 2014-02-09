@@ -75,7 +75,14 @@ class MembershipCheckoutComponent extends CheckoutComponent{
 			$idfield = Config::inst()->get('Member','unique_identifier_field');
 			$idval = $data[$idfield];
 			if(ShopMember::get_by_identifier($idval)){
-				$result->error(sprintf(_t("Checkout.MEMBEREXISTS","A member already exists with the %s %s"),$idfield,$idval), $idval);
+				$result->error(
+					_t(
+						'Checkout.MEMBEREXISTS',
+						'A member already exists with the {field} {value}',
+						array('field' => $idfield, 'value' => $idval)
+					),
+					$idval
+				);
 			}
 			$passwordresult = $this->passwordvalidator->validate($data['Password'], $member);
 			if(!$passwordresult->valid()){

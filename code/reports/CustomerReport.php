@@ -8,22 +8,24 @@
  */
 class CustomerReport extends ShopPeriodReport{
 	
-	protected $title = "Customers";
 	protected $dataClass = "Member";
 	protected $periodfield = "Order.Paid";
-	
+
 	function columns(){
 		return array(
-			"FirstName" => "First Name",
-			"Surname" => "Surname",
-			"Email" => "Email",
-			"Created" => "Joined",
-			"Spent" => "Spent",
-			"Orders" => "Orders",
-			"NumVisit" => "Visits",
-			"edit"=>	array(
-				"title" => "Edit",
-				"formatting" => '<a href=\"admin/security/EditForm/field/Members/item/$ID/edit\" target=\"_new\">edit</a>'
+			'FirstName' => _t('CustomerReport.FIRSTNAME','First Name'),
+			'Surname' => _t('CustomerReport.SURNAME','Surname'),
+			'Email' => _t('CustomerReport.EMAIL','Email'),
+			'Created' => _t('CustomerReport.JOINED','Joined'),
+			'Spent' => _t('CustomerReport.SPENT','Spent'),
+			'Orders' => _t('CustomerReport.ORDERS','Orders'),
+			'NumVisit' => _t('CustomerReport.VISITS','Visits'),
+			'edit'=>	array(
+				'title' => _t('CustomerReport.EDIT','Edit'),
+				'formatting' =>
+					'<a href=\"admin/security/EditForm/field/Members/item/$ID/edit\" target=\"_new\">'
+						._t('CustomerReport.EDIT','Edit')
+					.'</a>'
 			),
 			
 		);

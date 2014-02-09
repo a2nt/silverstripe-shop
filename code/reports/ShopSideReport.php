@@ -23,14 +23,15 @@ class ShopSideReport_FeaturedProducts extends SS_Report {
 	}
 
 	function sourceRecords($params = null) {
-		return Product::get()->filter('Featured', 1)->sort("Title");
+		$class = Config::inst()->get('ShopConfig','product_class')?Config::inst()->get('ShopConfig','product_class'):'Product';
+		return $class::get()->filter('Featured', 1)->sort("Title");
 	}
 
 	function columns() {
 		return array(
-			"Title" => array(
-				"title" => "Title",
-				"link" => true
+			'Title' => array(
+				'title' => _t('ShopSideReport.PRODUCTTITLE','Title'),
+				'link' => true
 			)
 		);
 	}
@@ -43,25 +44,26 @@ class ShopSideReport_FeaturedProducts extends SS_Report {
 class ShopSideReport_AllProducts extends SS_Report {
 
 	function title() {
-		return _t('ShopSideReport.ALLPRODUCTS', "All Products");
+		return _t('ShopSideReport.ALLPRODUCTS', 'All Products');
 	}
 	
 	function group() {
-		return _t('ShopSideReport.ShopGROUP', "Shop");
+		return _t('ShopSideReport.ShopGROUP', 'Shop');
 	}
 	function sort() {
 		return 0;
 	}
 
 	function sourceRecords($params = null) {
-		return Product::get()->sort('Title');
+		$class = Config::inst()->get('ShopConfig','product_class')?Config::inst()->get('ShopConfig','product_class'):'Product';
+		return $class::get()->sort('Title');
 	}
 
 	function columns() {
 		return array(
-			"Title" => array(
-				"title" => "Title",
-				"link" => true
+			'Title' => array(
+				'title' => _t('ShopSideReport.PRODUCTTITLE','Title'),
+				'link' => true
 			)
 		);
 	}
@@ -71,22 +73,23 @@ class ShopSideReport_AllProducts extends SS_Report {
 class ShopSideReport_NoImageProducts extends SS_Report {
 	
 	function title() {
-		return _t('ShopSideReport.NOIMAGE',"Products with no image");
+		return _t('ShopSideReport.NOIMAGE','Products with no image');
 	}
 	function group() {
-		return _t('ShopSideReport.ShopGROUP', "Shop");
+		return _t('ShopSideReport.ShopGROUP', 'Shop');
 	}
 	function sort() {
 		return 0;
 	}
 	function sourceRecords($params = null) {
-		return Product::get()->where("\"Product\".\"ImageID\" IS NULL OR \"Product\".\"ImageID\" <= 0")->sort("\"Title\" ASC");
+		$class = Config::inst()->get('ShopConfig','product_class')?Config::inst()->get('ShopConfig','product_class'):'Product';
+		return $class::get()->where('"Product"."ImageID" IS NULL OR "Product"."ImageID" <= 0')->sort('"Title" ASC');
 	}
 	function columns() {
 		return array(
-			"Title" => array(
-				"title" => "Title",
-				"link" => true
+			'Title' => array(
+				'title' => _t('ShopSideReport.PRODUCTTITLE','Title'),
+				'link' => true
 			)
 		);
 	}
@@ -95,25 +98,26 @@ class ShopSideReport_NoImageProducts extends SS_Report {
 class ShopSideReport_HeavyProducts extends SS_Report {
 
 	function title() {
-		return _t('ShopSideReport.HEAVY',"Heavy Products");
+		return _t('ShopSideReport.HEAVY','Heavy Products');
 	}
 	function group() {
-		return _t('ShopSideReport.ShopGROUP', "Shop");
+		return _t('ShopSideReport.ShopGROUP', 'Shop');
 	}
 	function sort() {
 		return 0;
 	}
 	function sourceRecords($params = null) {
-		return Product::get()->where("\"Product\".\"Weight\" > 10")->sort("\"Weight\" ASC");
+		$class = Config::inst()->get('ShopConfig','product_class')?Config::inst()->get('ShopConfig','product_class'):'Product';
+		return $class::get()->where('"Product"."Weight" > 10')->sort('"Weight" ASC');
 	}
 	function columns() {
 		return array(
-			"Title" => array(
-					"title" => "Title",
-					"link" => true
+			'Title' => array(
+					'title' => _t('ShopSideReport.PRODUCTTITLE','Title'),
+					'link' => true
 			),
-			"Weight" => array(
-				'title' => 'Weight'	
+			'Weight' => array(
+				'title' => _t('ShopSideReport.WEIGHT','Weight')
 			)
 		);
 	}

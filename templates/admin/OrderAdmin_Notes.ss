@@ -1,19 +1,14 @@
-<table class="ss-gridfield-table">
+<table class="table">
 	<thead>
 		<tr class="title">
 			<th colspan="1">
-				<h2><% _t("NOTES","Notes") %></h2>
+				<h2><%t Cart.ORDERNOTES 'Notes' %></h2>
 			</th>
 		</tr>
 	</thead>
 	<tbody>
-		<tr class="ss-gridfield-item ">
+		<tr class="table-item">
 			<td>$Notes</td>
 		</tr>
 	</tbody>
-	<tfoot>
-		<tr>
-			<td class="bottom-all" colspan="5"></td>
-		</tr>
-	</tfoot>
 </table>

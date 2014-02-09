@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" >
-		<title><% _t("TITLE","Shop Status Change") %></title>
+		<title><%t OrderReciept.STATUSTITLE "Shop Status Change" %></title>
 		<style>
 			<!--
 			/** Global resetting for Design **/
@@ -97,7 +97,7 @@
 			<thead>
 				<tr>
 					<th scope="col" colspan="2">
-						<h1><% _t("HEADLINE","Shop Status Change") %></h1>
+						<h1><%t OrderReciept.STATUSTITLE "Shop Status Change" %></h1>
 					</th>
 				</tr>
 				<tr>
@@ -107,11 +107,11 @@
 				</tr>
 			</thead>
 			<tbody>
-				<% if Order %>
-				<% with Order %>
+				<% if $Order %>
+				<% with $Order %>
 					<tr>
 						<td scope="row" colspan="2" class="typography">	
-							<p><% sprintf(_t("STATUSCHANGE","Status changed to \"%s\" for Order #"),$Status) %>{$ID}</p>
+							<p><%t OrderReciept.STATUSCHANGE 'Status changed to "{status}" for Order #' status=$Status %>$Reference</p>
 						</td>
 					</tr>
 				<% end_with %>

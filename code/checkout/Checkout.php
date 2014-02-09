@@ -166,7 +166,7 @@ class Checkout{
 			);
 			throw new ValidationException($result);
 		}
-		$idfield = Member::get_unique_identifier_field();
+		$idfield = Config::inst()->get('Member','unique_identifier_field');
 		if(!isset($data[$idfield]) || empty( $data[$idfield])){
 			$result->error(
 				sprintf(_t("Checkout.IDFIELDNOTFOUND","Required field not found: %s"),$idfield)

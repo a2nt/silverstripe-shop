@@ -51,10 +51,11 @@ class Address extends DataObject{
 	);
 
 	private static $required_fields = array(
-		'Country',
+		//'Country',
 		'State',
 		'City',
-		'Address'
+		'Address',
+		'Phone'
 	);
 
 	function getFrontEndFields($params = null){

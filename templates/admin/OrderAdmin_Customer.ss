@@ -1,17 +1,17 @@
-<table class="ss-gridfield-table">
+<table class="table">
 	<thead>
 		<tr class="title">
 			<th colspan="2">
-				<h2><% _t("CUSTOMER","Customer") %></h2>
+				<h2><%t Cart.CUSTOMER 'Customer' %></h2>
 			</th>
 		</tr>
 		<tr class="header">
-			<th class="main">Name</th>
-			<th class="main">Email</th>
+			<th class="main"><%t Cart.CUSTOMERNAME 'Name' %></th>
+			<th class="main"><%t Cart.CUSTOMEREMAIL 'Email' %></th>
 		</tr>
 	</thead>
 	<tbody>
-		<tr class="ss-gridfield-item">
+		<tr class="table-item">
 			<td>$Name</td>
 			<td>
 				<% if LatestEmail %>
@@ -20,9 +20,4 @@
 			</td>
 		</tr>
 	</tbody>
-	<tfoot>
-		<tr>
-			<td class="bottom-all" colspan="5"></td>
-		</tr>
-	</tfoot>
 </table>

@@ -1,14 +1,14 @@
 <table id="PaymentTable" class="infotable">
 	<thead>			
 		<tr class="gap mainHeader">
-				<th colspan="10" class="left"><% _t("PAYMENTS","Payment(s)") %></th>
+				<th colspan="10" class="left"><%t Cart.PAYMENTS 'Payment(s)' %></th>
 		</tr>
 		<tr>
-			<th scope="row" class="twoColHeader"><% _t("DATE","Date") %></th>
-			<th scope="row"  class="twoColHeader"><% _t("AMOUNT","Amount") %></th>
-			<th scope="row"  class="twoColHeader"><% _t("PAYMENTSTATUS","Payment Status") %></th>
-			<th scope="row" class="twoColHeader"><% _t("PAYMENTMETHOD","Method") %></th>
-			<th scope="row" class="twoColHeader"><% _t("PAYMENTNOTE","Note") %></th>
+			<th scope="row" class="twoColHeader"><%t Cart.DATE 'Date' %></th>
+			<th scope="row"  class="twoColHeader"><%t Cart.AMOUNT 'Amount' %></th>
+			<th scope="row"  class="twoColHeader"><%t Cart.PAYMENTSTATUS 'Payment Status' %></th>
+			<th scope="row" class="twoColHeader"><%t Cart.PAYMENTMETHOD 'Method' %></th>
+			<th scope="row" class="twoColHeader"><%t Cart.PAYMENTNOTE 'Note' %></th>
 		</tr>
 	</thead>
 	<tbody>

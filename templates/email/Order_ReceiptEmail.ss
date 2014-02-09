@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" >
-		<title><% _t("TITLE","Shop Receipt") %></title>
+		<title><%t OrderReciept.TITLE "Shop Receipt" %></title>
 		<% include OrderReceiptStyle %>
 	</head>
 	<body>
@@ -20,8 +20,8 @@
 						$PurchaseCompleteMessage
 					</td>
 				</tr>
-				<% if Order %>
-				<% loop Order %>
+				<% if $Order %>
+				<% loop $Order %>
 					<tr>
 						<td>
 							<% include Order %>

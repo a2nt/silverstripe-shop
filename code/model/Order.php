@@ -65,33 +65,55 @@ class Order extends DataObject {
 		'TotalOutstanding' => 'Currency'
 	);
 
-	private static $summary_fields = array(
-		'Reference' => 'Order No',
-		'Placed' => 'Date',
-		'Name' => 'Customer',
-		'LatestEmail' => 'Email',
-		'Total' => 'Total',
-		'Status' => 'Status'
-	);
+	public function summaryFields(){
+		return array(
+			'Reference' => array(
+				'title' => _t('Order.db_Reference','Order No')
+			),
+			'Placed' => array(
+				'title' => _t('Order.db_Placed','Date')
+			),
+			'Name' => array(
+				'title' => _t('Order.has_one_Member','Customer')
+			),
+			'LatestEmail' => array(
+				'title' => _t('Order.db_Email','Email')
+			),
+			'Total' => array(
+				'title' => _t('Order.db_Total','Total')
+			),
+			'Status' => array(
+				'title' => _t('Order.db_Status','Status')
+			)
+		);
+	}
 
-	private static $searchable_fields = array(
-		'Reference' => array(),
-		'FirstName' => array(
-			'title' => 'Customer Name',
-		),
-		'Email' => array(
-			'title' => 'Customer Email',
-		),
-		'Status' => array(
-			'filter' => 'ExactMatchFilter',
-			'field' => 'CheckboxSetField'
-		)
-	);
+	public function searchableFields(){
+		return array(
+			'Reference' => array(
+				'title' => _t('Order.db_Reference','Order No'),
+				'filter' => 'ExactMatchFilter',
+			),
+			'FirstName' => array(
+				'title' => _t('Order.has_one_Member','Customer Name'),
+				'filter' => 'PartialMatchFilter',
+			),
+			'Email' => array(
+				'title' => _t('Order.db_Email','Customer Email'),
+				'filter' => 'ExactMatchFilter',
+			),
+			'Status' => array(
+				'title' => _t('Order.db_Status','Status'),
+				'filter' => 'ExactMatchFilter',
+				'field' => 'CheckboxSetField'
+			)
+		);
+	}
 
-	private static $singular_name = "Order";
-	private static $plural_name = "Orders";
+	private static $singular_name = 'Order';
+	private static $plural_name = 'Orders';
 
-	private static $default_sort = "\"Placed\" DESC, \"Created\" DESC";
+	private static $default_sort = '"Placed" DESC, "Created" DESC';
 
 	/**
 	 * Statuses for orders that have been placed.
@@ -152,21 +174,45 @@ class Order extends DataObject {
 	 * Also note that some fields are introduced in OrdersAdmin_RecordController 
 	 */
 	function getCMSFields(){
-		$fields = new FieldList(new TabSet('Root',new Tab('Main')));
+		$fields = FieldList::create(
+			TabSet::create('Root',
+				Tab::create('Main',_t('Order.MAINTAB','Main'))
+			)
+		);
 		$fs = "<div class=\"field\">";
 		$fe = "</div>";
 		$fields->addFieldsToTab('Root.Main', array(
-			DropdownField::create("Status", _t("STATUS","Status"), self::get_order_status_options()),
-			LiteralField::create('Customer', $fs.$this->renderWith("OrderAdmin_Customer").$fe),
-			LiteralField::create('Addresses', $fs.$this->renderWith("OrderAdmin_Addresses").$fe),
-			LiteralField::create('Content', $fs.$this->renderWith("OrderAdmin_Content").$fe),
-			LiteralField::create('Notes', $fs.$this->renderWith("OrderAdmin_Notes").$fe)
+			DropdownField::create('
+				Status',
+				_t('Order.db_Status','Status'),
+				self::get_order_status_options()
+			),
+			LiteralField::create(
+				'Customer',
+				$fs.$this->renderWith('OrderAdmin_Customer').$fe
+			),
+			LiteralField::create(
+				'Addresses',
+				$fs.$this->renderWith('OrderAdmin_Addresses').$fe
+			),
+			LiteralField::create(
+				'Content',
+				$fs.$this->renderWith('OrderAdmin_Content').$fe
+			),
+			LiteralField::create(
+				'Notes',
+				$fs.$this->renderWith('OrderAdmin_Notes').$fe
+			)
 		));
 		$this->extend('updateCMSFields',$fields);
-		$payments = $fields->fieldByName("Root.Payments.Payments");
+		$payments = $fields->fieldByName("Root.Payments.Payments")
+			->setTitle(_t('Cart.PAYMENTS','Payment(s)'));
 		$fields->removeByName("Payments");
-		$fields->insertBefore($payments, "Notes");
-
+		
+		if(Config::inst()->get('ShopConfig','payment') == true){
+			$fields->insertBefore($payments, "Notes");
+		}
+		
 		return $fields;
 	}
 
@@ -180,9 +226,15 @@ class Order extends DataObject {
 		$fields->fieldByName('Status')
 			->setSource(array_combine(self::config()->placed_status,self::config()->placed_status));
 		//add date range filtering
-		$fields->insertBefore(DateField::create("DateFrom","Date from")
+		$fields->insertBefore(DateField::create(
+				'DateFrom',
+				_t('Order.DATEFROM','Date from')
+			)
 			->setConfig('showcalendar',true),'Status');
-		$fields->insertBefore(DateField::create("DateTo","Date to")
+		$fields->insertBefore(DateField::create(
+				'DateTo',
+				_t('Order.DATETO','Date to')
+			)
 			->setConfig('showcalendar',true), 'Status');
 		//get the array, to maniplulate name, and fullname seperately
 		$filters = $context->getFilters(); 
@@ -290,7 +342,7 @@ class Order extends DataObject {
 	public function getModifier($className, $forcecreate = false){
 		if(ClassInfo::exists($className)){
 			//search for existing
-			if($modifier = DataObject::get_one($className,"\"OrderID\" = ".$this->ID)){ //sort by?
+			if($modifier = DataObject::get_one($className,'"OrderID" = '.$this->ID)){ //sort by?
 				//remove if no longer valid
 				if(!$modifier->valid()){
 					//TODO: need to provide feedback message - why modifier was removed
@@ -308,7 +360,7 @@ class Order extends DataObject {
 				return $modifier;	
 			}
 		}else{
-			user_error("Class \"$className\" does not exist.");
+			user_error('Class "'.$className.'" does not exist.');
 		}
 		return null;
 	}
@@ -317,7 +369,7 @@ class Order extends DataObject {
 	 * Enforce rounding precision when setting total
 	 */
 	function setTotal($val){
-		$this->setField("Total", round($val, self::$rounding_precision));
+		$this->setField('Total', round($val, self::$rounding_precision));
 	}
 	
 	/**
@@ -325,7 +377,7 @@ class Order extends DataObject {
 	 * Retrieves value from DataObject's record array.
 	 */
 	function Total(){
-		return $this->getField("Total");
+		return $this->getField('Total');
 	}
 	
 	/**

@@ -2,11 +2,13 @@
 
 class ProductReport extends ShopPeriodReport{
 	
-	protected $title = "Products";
 	protected $description = "Understand which products are performing, and which aren't.";
-	protected $dataClass = "Product";
-	protected $periodfield = "SiteTree.Created";
-		
+	//protected $periodfield = "SiteTree.Created";
+
+	public function dataClass() {
+		return Config::inst()->get('ShopConfig','product_class')?Config::inst()->get('ShopConfig','product_class'):'Product';
+	}
+
 	function getReportField(){
 		$reportfield = parent::getReportField();
 		$reportfield->getConfig()->removeComponentsByType('GridFieldPaginator');
@@ -15,38 +17,53 @@ class ProductReport extends ShopPeriodReport{
 	
 	function columns(){
 		return array(
-			"Title" => array(
-				"title" => "Title",
-				"formatting" => '<a href=\"admin/products/Product/$ID/edit\" target=\"_new\">$Title</a>'
+			'Title' => array(
+				'title' => _t('ProductReport.PRODUCTTITLE','Title'),
+				'formatting' => '<a href=\"admin/products/'.$this->dataClass().'/$ID/edit\" target=\"_new\">$Title</a>'
 			),
-			"BasePrice" => "Price",
-			"Created" => "Created",
-			"Quantity" => "Quantity",
-			"Sales" => "Sales"
+			'BasePrice' => _t('ProductReport.PRICE','Price'),
+			'Created' => 'Created',
+			'Quantity' => 'Quantity',
+			'Sales' => 'Sales'
 		);
 	}
 	
 	function query($params){
+		$class = $this->dataClass();
+		$sng = singleton($class);
+		$baseClass = ClassInfo::baseDataClass($class);
+
 		$query = parent::query($params);
-		$query->selectField($this->periodfield, "FilterPeriod")
+		$query->selectField($baseClass.'.Created','FilterPeriod')
 			->addSelect(array(
-				"Product.ID",
-				"SiteTree.ClassName",
-				"SiteTree.Title",
-				"Product.BasePrice",
-				"SiteTree.Created",
+				$class.'.ID',
+				$baseClass.'.Created',
+				$baseClass.'.ClassName',
+				//$baseClass.'.Title'
 			))
-			->selectField("Count(OrderItem.Quantity)", "Quantity")
-			->selectField("Sum(OrderAttribute.CalculatedTotal)", "Sales");
-		$query->addInnerJoin("SiteTree","Product.ID = SiteTree.ID");
-		$query->addLeftJoin("Product_OrderItem","Product.ID = Product_OrderItem.ProductID");
-		$query->addLeftJoin("OrderItem","Product_OrderItem.ID = OrderItem.ID");
-		$query->addLeftJoin("OrderAttribute","Product_OrderItem.ID = OrderAttribute.ID");
-		$query->addLeftJoin("Order","OrderAttribute.OrderID = Order.ID");
-		$query->addGroupby("Product.ID");
-		$query->addWhere("\"Order\".\"Paid\" IS NOT NULL OR \"Product_OrderItem\".\"ID\" IS NULL");
+			->selectField($baseClass.'.Title','Title')
+			->selectField('Count(OrderItem.Quantity)','Quantity')
+			->selectField('Sum(OrderAttribute.CalculatedTotal)','Sales');
+		if($baseClass == 'SiteTree'){
+			$query->addInnerJoin('SiteTree',$class.'.ID = SiteTree.ID');
+		}
+
+		if(array_key_exists('BasePrice',$sng->stat('db'))){
+			$query->selectField($class.'.BasePrice','BasePrice');
+		}
+
+		if(array_key_exists('Price',$sng->stat('db'))){
+			$query->selectField($class.'.Price','BasePrice');
+		}
+		$query->setFrom($this->dataClass());
+		$query->addLeftJoin($sng->stat('order_item'),$class.'.ID = '.$sng->stat('order_item').'.'.$class.'ID');
+		$query->addLeftJoin('OrderItem',$sng->stat('order_item').'.ID = OrderItem.ID');
+		$query->addLeftJoin('OrderAttribute',$sng->stat('order_item').'.ID = OrderAttribute.ID');
+		$query->addLeftJoin('Order','OrderAttribute.OrderID = Order.ID');
+		$query->addGroupby($this->dataClass().'.ID');
+		$query->addWhere('"Order"."Paid" IS NOT NULL OR "'.$sng->stat('order_item').'"."ID" IS NULL');
 		if(!$query->getOrderBy()){
-			$query->setOrderBy("Sales DESC");
+			$query->setOrderBy('Sales DESC');
 		}
 		return $query;
 	}

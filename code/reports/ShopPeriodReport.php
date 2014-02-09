@@ -6,36 +6,48 @@
 class ShopPeriodReport extends SS_Report{
 	
 	protected $dataClass = 'Order';
-	protected $periodfield = "Created";
+	protected $periodfield = 'Created';
 	protected $grouping = false;
 	protected $pagesize = 20;
 	
 	function title(){
-		return _t($this->class.".TITLE",$this->title);
+		return _t($this->class.'.TITLE',$this->title);
 	}
 	
 	function description(){
-		return _t($this->class.".DESCRIPTION",$this->description);
+		return _t($this->class.'.DESCRIPTION',$this->description);
 	}
 	
 	function parameterFields() {
 		$dateformat = Member::currentUser()->getDateFormat();
-		$fields = new FieldList(
-			$start = new DateField("StartPeriod","Start ($dateformat)"),
-			$end = new DateField("EndPeriod","End ($dateformat)")
+		$fields = FieldList::create(
+			$start = DateField::create(
+				'StartPeriod',
+				_t('ShopPeriodReport.START','Start ({format})',array('format' => $dateformat))
+			),
+			$end = DateField::create(
+				'EndPeriod',
+				_t('ShopPeriodReport.END','End ({format})',array('format' => $dateformat))
+			)
 		);
 		if($this->grouping){
-			$fields->push(new DropdownField("Grouping","Group By",array(
-				"Year" => "Year",
-				"Month" => "Month",
-				"Week" => "Week",
-				"Day" => "Day"
-			)));
+			$fields->push(
+				DropdownField::create(
+					'Grouping',
+					_t('ShopPeriodReport.GROUPBY','Group By'),
+					array(
+						'Year' => _t('ShopPeriodReport.YEAR','Year'),
+						'Month' => _t('ShopPeriodReport.MONTH','Month'),
+						'Week' => _t('ShopPeriodReport.WEEK','Week'),
+						'Day' => _t('ShopPeriodReport.DAY','Day')
+					)
+				)
+			);
 		}
-		$start->setConfig("dateformat",$dateformat);
-		$end->setConfig("dateformat",$dateformat);
-		$start->setConfig("showcalendar", true); //Not working! (js does not run)
-		$end->setConfig("showcalendar", true); //Not working!
+		$start->setConfig('dateformat',$dateformat);
+		$end->setConfig('dateformat',$dateformat);
+		$start->setConfig('showcalendar', true); //Not working! (js does not run)
+		$end->setConfig('showcalendar', true); //Not working!
 		return $fields;
 	}
 	
@@ -54,7 +66,7 @@ class ShopPeriodReport extends SS_Report{
 	}
 	
 	function sourceRecords($params){
-		isset($params['Grouping']) || $params['Grouping'] = "Month";
+		isset($params['Grouping']) || $params['Grouping'] = 'Month';
 		$output = new ArrayList();
 		$query = $this->query($params);
 		$results = $query->execute();
@@ -63,13 +75,13 @@ class ShopPeriodReport extends SS_Report{
 			$output->push($record = new $this->dataClass($result));
 			if($this->grouping){
 				$dformats = array(
-					"Year" => "Y",
-					"Month" => "Y - F",
-					"Week" => "o - W",
-					"Day" =>	"d F Y"
+					'Year' => 'Y',
+					'Month' => 'Y - F',
+					'Week' => 'o - W',
+					'Day' =>	'd F Y'
 				);
 				$dformat = $dformats[$params['Grouping']];
-				$record->FilterPeriod = (empty($result["FilterPeriod"])) ? "uncategorised" : date($dformat, strtotime($result["FilterPeriod"]));
+				$record->FilterPeriod = (empty($result['FilterPeriod'])) ? 'uncategorised' : date($dformat, strtotime($result['FilterPeriod']));
 			}
 		}
 		return $output;

@@ -33,7 +33,7 @@ class CheckoutFieldFactory{
 	
 	function getMembershipFields(){
 		$fields = $this->getContactFields();
-		$idfield = Member::get_unique_identifier_field();
+		$idfield = Config::inst()->get('Member','unique_identifier_field');
 		if(!$fields->fieldByName($idfield)){
 			$fields->push(new TextField($idfield,$idfield)); //TODO: scaffold the correct id field
 		}

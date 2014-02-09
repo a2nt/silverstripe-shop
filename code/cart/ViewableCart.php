@@ -36,4 +36,10 @@ class ViewableCart extends Extension{
 		return Director::baseURL();
 	}
 	
+	public function getCheckoutLink(){
+		return CheckoutPage::find_link();
+	}
+	public function getCartLink(){
+		return CartPage::find_link();
+	}
 }

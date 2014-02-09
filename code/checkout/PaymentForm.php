@@ -6,15 +6,28 @@ class PaymentForm extends CheckoutForm {
 		//form validation has passed by this point, so we can save data
 		$this->config->setData($form->getData());
 		$order = $this->config->getOrder();
-		$gateway = Checkout::get($order)->getSelectedPaymentMethod(false);
-		if(GatewayInfo::is_offsite($gateway)){
 
-			return $this->submitpayment($data, $form);
+		// process payment if it is available
+		if(Config::inst()->get('ShopConfig','payment') == true){
+			$gateway = Checkout::get($order)->getSelectedPaymentMethod(false);
+			if(GatewayInfo::is_offsite($gateway)){
+				return $this->submitpayment($data, $form);
+			}
+			
+			return $this->controller->redirect(
+				$this->controller->Link('payment')
+			);
+		// if payment option deactivated place order and send reciept
+		}else{
+			$processor = OrderProcessor::create($order);
+			if($processor->canPlace($order)){
+				$processor->placeOrder();
+				$processor->sendReceipt();
+			}
+			return $this->controller->redirect(
+				$this->controller->Link('complete')
+			);
 		}
-		
-		return $this->controller->redirect(
-			$this->controller->Link('payment')
-		);		
 	}
 
 	function submitpayment($data, $form){

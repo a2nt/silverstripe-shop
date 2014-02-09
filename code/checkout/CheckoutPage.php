@@ -45,7 +45,7 @@ class CheckoutPage extends BasicPage {
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->addFieldsToTab('Root.Main', array(
-			ElEditorField::create(
+			HtmlEditorField::create(
 				'PurchaseComplete',
 				_t('CheckoutPage.PURCHASECOMPLETE','Purchase Complete'),
 			4)
@@ -63,7 +63,8 @@ class CheckoutPage_Controller extends BasicPage_Controller {
 	private static $allowed_actions = array(
 		'OrderForm',
 		'payment',
-		'PaymentForm'
+		'PaymentForm',
+		'complete'
 	);
 	
 	/**
@@ -95,8 +96,16 @@ class CheckoutPage_Controller extends BasicPage_Controller {
 		}
 
 		return array(
-			'Title' => 'Make Payment',
+			'Title' => _t('CheckoutPage.MAKEPAYMENT','Make Payment'),
 			'OrderForm' => $this->PaymentForm()
+		);
+	}
+
+	function complete(){
+		return array(
+			'Title' => _t('CheckoutPage.PURCHASECOMPLETETITLE','Congratiulations, your purchase is complete.'),
+			'Content' => $this->PurchaseComplete,
+			'OrderForm' => false
 		);
 	}
 

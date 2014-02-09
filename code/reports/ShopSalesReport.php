@@ -10,10 +10,10 @@
 */
 class ShopSalesReport extends ShopPeriodReport{
 	
-	protected $title = "Shop Sales";
-	protected $description = "Monitor shop sales performance for a particular period. Group results by year, month, or day.";
-	protected $dataClass = "Order";
-	protected $periodfield = "Order.Paid";
+	protected $title = 'Shop Sales';
+	protected $description = 'Monitor shop sales performance for a particular period. Group results by year, month, or day.';
+	protected $dataClass = 'Order';
+	protected $periodfield = 'Order.Paid';
 	protected $grouping = true;
 		
 	function getReportField(){
@@ -30,18 +30,18 @@ class ShopSalesReport extends ShopPeriodReport{
 	
 	function columns(){
 		return array(
-			"FilterPeriod" => "Period",
-			"Count" => "Count",
-			"Sales" => "Sales"
+			'FilterPeriod' => _t('ShopSalesReport.PERIOD','Period'),
+			'Count' => _t('ShopSalesReport.COUNT','Count'),
+			'Sales' => _t('ShopSalesReport.SALES','Sales')
 		);
 	}
 	
 	function query($params){
 		$query = parent::query($params);
-		$query->selectField($this->periodfield, "FilterPeriod")
-			->selectField("Count(Order.ID)", "Count")
-			->selectField("Sum(Order.Total)", "Sales");
-		$query->setWhere("\"Order\".\"Paid\" IS NOT NULL");
+		$query->selectField($this->periodfield, 'FilterPeriod')
+			->selectField('Count(Order.ID)', 'Count')
+			->selectField('Sum(Order.Total)', 'Sales');
+		$query->setWhere('"Order"."Paid" IS NOT NULL');
 		return $query;
 	}
 	

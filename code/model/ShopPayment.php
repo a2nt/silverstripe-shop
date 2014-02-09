@@ -17,4 +17,12 @@ class ShopPayment extends DataExtension {
 		}
 	}
 
+	public function updateSummaryFields(&$fields){
+		$fields = array(
+				'Money' => _t('Payment.AMOUNT','Amount'),
+				'GatewayTitle' => _t('Payment.PAYMENTTYPE','Gateway'),
+				'Status' => _t('Payment.db_Status','Status'),
+				'Created' => _t('Payment.db_Created','Created')
+		);
+	}
 }
