@@ -83,7 +83,13 @@ class ShopSideReport_NoImageProducts extends SS_Report {
 	}
 	function sourceRecords($params = null) {
 		$class = Config::inst()->get('ShopConfig','product_class')?Config::inst()->get('ShopConfig','product_class'):'Product';
-		return $class::get()->where('"Product"."ImageID" IS NULL OR "Product"."ImageID" <= 0')->sort('"Title" ASC');
+		$sng = singleton($class);
+		if(array_key_exists('Photo',$sng->stat('has_one'))){
+			$imgField = 'Photo';
+		}else{
+			$imgField = 'Image';
+		}
+		return $class::get()->where('"'.$class.'"."'.$imgField.'ID" IS NULL OR "'.$class.'"."'.$imgField.'ID" <= 0')->sort('"Title" ASC');
 	}
 	function columns() {
 		return array(
@@ -95,7 +101,7 @@ class ShopSideReport_NoImageProducts extends SS_Report {
 	}
 }
 
-class ShopSideReport_HeavyProducts extends SS_Report {
+/*class ShopSideReport_HeavyProducts extends SS_Report {
 
 	function title() {
 		return _t('ShopSideReport.HEAVY','Heavy Products');
@@ -121,4 +127,4 @@ class ShopSideReport_HeavyProducts extends SS_Report {
 			)
 		);
 	}
-}
+}*/

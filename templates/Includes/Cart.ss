@@ -96,7 +96,7 @@
 			<tr class="gap Total">
 				<th colspan="4" scope="row"><%t Cart.TOTAL 'Total' %></th>
 				<td id="$TableTotalID"><span class="value">$Total.Nice</span> <span class="currency">$Currency</span></td>
-				<% if Editable %><td>&nbsp;</td><% end_if %>
+				<% if $Editable %><td>&nbsp;</td><% end_if %>
 			</tr>
 		</tfoot>
 	</table>

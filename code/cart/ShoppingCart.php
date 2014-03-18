@@ -249,7 +249,7 @@ class ShoppingCart{
 	 * Store a new error.
 	 */
 	protected function error($message){
-		$this->message($message,"bad");
+		$this->message($message,"error");
 		return false;
 	}
 	
@@ -258,7 +258,7 @@ class ShoppingCart{
 	 * @param string $message
 	 * @param string $type - good, bad, warning
 	 */
-	protected function message($message,$type = "good"){
+	protected function message($message,$type = "success"){
 		$this->message = $message;
 		$this->type = $type;
 	}
@@ -402,32 +402,55 @@ class ShoppingCart_Controller extends Controller{
 			$quantity = (int) $request->getVar('quantity');
 			if(!$quantity) $quantity = 1;
 			$this->cart->add($product,$quantity,$request->getVars());
+			Page_Controller::setSiteWideMessage(
+				$this->cart->getMessage(),
+				$this->cart->getMessageType()
+			);
 		}
 		return self::direct();
 	}
 	
 	function remove($request){
-		if($product = $this->buyableFromRequest())
+		if($product = $this->buyableFromRequest()){
 			$this->cart->remove($product,$quantity = 1,$request->getVars());
+			Page_Controller::setSiteWideMessage(
+				$this->cart->getMessage(),
+				$this->cart->getMessageType()
+			);
+		}
 		return self::direct();
 	}
 	
 	function removeall($request){
-		if($product = $this->buyableFromRequest())
+		if($product = $this->buyableFromRequest()){
 			$this->cart->remove($product,null,$request->getVars());
+			Page_Controller::setSiteWideMessage(
+				$this->cart->getMessage(),
+				$this->cart->getMessageType()
+			);
+		}
 		return self::direct();
 	}
 	
 	function setquantity($request){
 		$product = $this->buyableFromRequest();
 		$quantity = (int) $request->getVar('quantity');
-		if($product)
+		if($product){
 			$this->cart->setQuantity($product,$quantity,$request->getVars());
+			Page_Controller::setSiteWideMessage(
+				$this->cart->getMessage(),
+				$this->cart->getMessageType()
+			);
+		}
 		return self::direct();
 	}
 	
 	function clear($request){
 		$this->cart->clear();
+		Page_Controller::setSiteWideMessage(
+			$this->cart->getMessage(),
+			$this->cart->getMessageType()
+		);
 		return self::direct();		
 	}
 

@@ -61,6 +61,7 @@ class CheckoutPage extends BasicPage {
 class CheckoutPage_Controller extends BasicPage_Controller {
 
 	private static $allowed_actions = array(
+		'OrderContactForm',
 		'OrderForm',
 		'payment',
 		'PaymentForm',
@@ -74,6 +75,20 @@ class CheckoutPage_Controller extends BasicPage_Controller {
 		if($this->Title)
 			return $this->Title;
 		return _t('CheckoutPage.TITLE',"Checkout");
+	}
+
+	function OrderContactForm() {
+		if(!(bool)$this->Cart()){
+			return false;
+		}
+		//var_dump(Injector::inst()->create("ContactCheckoutComponentConfig", ShoppingCart::curr()));
+		//new ContactCheckoutComponentConfig(ShoppingCart::curr());
+		//die('mmm');
+		return new PaymentForm(
+			$this,
+			'OrderContactForm',
+			new ContactCheckoutComponentConfig(ShoppingCart::curr())
+		);
 	}
 
 	function OrderForm() {

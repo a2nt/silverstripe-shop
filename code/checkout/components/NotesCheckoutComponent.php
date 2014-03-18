@@ -5,7 +5,7 @@ class NotesCheckoutComponent extends CheckoutComponent{
 	public function getFormFields(Order $order){
 		return FieldList::create(
 			TextareaField::create('Notes', _t('CheckoutField.NOTES','Message'))
-				->addExtraClass('notes clear-fix')
+				->addExtraClass('notes clear-fix span12')
 		);
 	}
 

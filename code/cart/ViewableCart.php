@@ -30,7 +30,10 @@ class ViewableCart extends Extension{
 	}
 	
 	public function getContinueLink(){
-		if($maincategory = DataObject::get_one('ProductCategory',"",true,"ParentID ASC, ID ASC")){
+		$class = Config::inst()->get('ShopConfig','product_category_class')?
+			Config::inst()->get('ShopConfig','product_category_class')
+			: 'ProductCategory';
+		if($maincategory = $class::get()->sort('ParentID ASC, ID ASC')->First()){
 			return $maincategory->Link();
 		}
 		return Director::baseURL();

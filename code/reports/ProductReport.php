@@ -19,12 +19,12 @@ class ProductReport extends ShopPeriodReport{
 		return array(
 			'Title' => array(
 				'title' => _t('ProductReport.PRODUCTTITLE','Title'),
-				'formatting' => '<a href=\"admin/products/'.$this->dataClass().'/$ID/edit\" target=\"_new\">$Title</a>'
+				'formatting' => '<a href=\"admin/catalog/'.$this->dataClass().'/EditForm/field/'.$this->dataClass().'/item/$ID/edit/\" target=\"_new\">$Title $TableTitle</a>'
 			),
 			'BasePrice' => _t('ProductReport.PRICE','Price'),
-			'Created' => 'Created',
-			'Quantity' => 'Quantity',
-			'Sales' => 'Sales'
+			'Created' => _t('ProductReport.CREATED','Created'),
+			'Quantity' => _t('ProductReport.QUANTITY','Quantity'),
+			'Sales' => _t('ProductReport.SALES','Sales')
 		);
 	}
 	
@@ -39,7 +39,7 @@ class ProductReport extends ShopPeriodReport{
 				$class.'.ID',
 				$baseClass.'.Created',
 				$baseClass.'.ClassName',
-				//$baseClass.'.Title'
+				//'Title'
 			))
 			->selectField($baseClass.'.Title','Title')
 			->selectField('Count(OrderItem.Quantity)','Quantity')

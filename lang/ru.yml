@@ -269,7 +269,10 @@ ru:
  ProductReport:
   PRICE: 'Цена'
   PRODUCTTITLE: 'Название'
-  TITLE: 'Непроданная Продукция'
+  TITLE: 'Неоплаченная Продукция'
+  QUANTITY: 'Кол-во'
+  CREATED: 'Дата'
+  SALES: 'Продажи'
  ShopSalesReport:
   COUNT: 'Кол-во'
   PERIOD: 'Период'
