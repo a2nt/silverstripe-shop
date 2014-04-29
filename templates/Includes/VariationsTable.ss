@@ -7,7 +7,7 @@
 	<% loop Variations %>
 			<tr>
 				<td>$Title.XML</td>
-				<td>$Price.Nice $Currency</td>
+				<td>$Price.Whole $Currency</td>
 				<td>
 				<% if canPurchase %>
 					<% if IsInCart %>

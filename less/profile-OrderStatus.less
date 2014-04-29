@@ -1,0 +1,79 @@
+.order-status {
+	margin:20px 0;
+	.title {
+		font-weight:700;
+	}
+	.progress {
+		.bar {
+			opacity:.3;
+		}
+		.bar.payment {
+			width:10%;
+		}
+		.bar.processing {
+			width:10%;
+		}
+		.bar.sent {
+			width:60%;
+		}
+		.bar.compleate {
+			width:20%;
+		}
+	}
+	.progress-Unpaid {
+		.bar.payment {
+			opacity:1;
+			-webkit-animation:progress-bar-stripes 2s linear infinite;
+			-moz-animation:progress-bar-stripes 2s linear infinite;
+			-ms-animation:progress-bar-stripes 2s linear infinite;
+			-o-animation:progress-bar-stripes 2s linear infinite;
+			animation:progress-bar-stripes 2s linear infinite;
+		}
+	}
+	.progress-Paid {
+		.bar.payment {
+			opacity:1;
+		}
+		.bar.processing {
+			opacity:1;
+			-webkit-animation:progress-bar-stripes 2s linear infinite;
+			-moz-animation:progress-bar-stripes 2s linear infinite;
+			-ms-animation:progress-bar-stripes 2s linear infinite;
+			-o-animation:progress-bar-stripes 2s linear infinite;
+			animation:progress-bar-stripes 2s linear infinite;
+		}
+	}
+	.progress-Sent {
+		.bar.payment,
+		.bar.processing {
+			opacity:1;
+		}
+		.bar.sent {
+			opacity:1;
+			-webkit-animation:progress-bar-stripes 2s linear infinite;
+			-moz-animation:progress-bar-stripes 2s linear infinite;
+			-ms-animation:progress-bar-stripes 2s linear infinite;
+			-o-animation:progress-bar-stripes 2s linear infinite;
+			animation:progress-bar-stripes 2s linear infinite;
+		}
+	}
+	.progress-Complete {
+		.bar {
+			opacity:1;
+		}
+	}
+	.progress-AdminCancelled,
+	.progress-MemberCancelled {
+		.bar {
+			opacity:1;
+			background-color:#dd514c;
+			background-image:-moz-linear-gradient(top,#ee5f5b,#c43c35);
+			background-image:-webkit-gradient(linear,0 0,0 100%,from(#ee5f5b),to(#c43c35));
+			background-image:-webkit-linear-gradient(top,#ee5f5b,#c43c35);
+			background-image:-o-linear-gradient(top,#ee5f5b,#c43c35);
+			background-image:linear-gradient(to bottom,#ee5f5b,#c43c35);
+			background-repeat:repeat-x;
+			filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b',endColorstr='#ffc43c35',GradientType=0);
+		}
+	}
+}

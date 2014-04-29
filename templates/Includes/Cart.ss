@@ -38,13 +38,13 @@
 						<% if $SubTitle %>
 							<div class="subtitle">$SubTitle</div>
 						<% end_if %>
-						<% if $Product.Variations && $Editable %>
-							<%t Cart.VARIATION 'Change:' %> $VariationField
+						<% if $VariationField && $Editable %>
+							<div class="variation-field"><%--t Cart.VARIATION 'Change:' --%>$VariationField</div>
 						<% end_if %>
 					</td>
-					<td>$UnitPrice.Nice</td>
+					<td>$UnitPrice.Whole</td>
 					<td><% if $Editable %>$QuantityField<% else %>$Quantity<% end_if %></td>
-					<td id="$TableTotalID">$Total.Nice</td>
+					<td id="$TableTotalID">$Total.Whole</td>
 					<% if $Editable %>
 					<td>
 						<% if $RemoveField %>
@@ -62,7 +62,7 @@
 		<tfoot>
 			<tr class="subtotal">
 				<th colspan="4" scope="row"><%t Cart.SUBTOTAL 'Sub-total' %></th>
-				<td id="$TableSubTotalID">$SubTotal.Nice</td>
+				<td id="$TableSubTotalID">$SubTotal.Whole</td>
 				<% if $Editable %><td>&nbsp;</td><% end_if %>
 			</tr>
 			<% if $Modifiers %>
@@ -76,7 +76,7 @@
 									$TableTitle
 								<% end_if %>
 							</th>
-							<td id="$TableTotalID">$TableValue.Nice</td>
+							<td id="$TableTotalID">$TableValue.Whole</td>
 							<td>
 							<% if $CanRemove %>
 								<a class="remove" href="$removeLink" title="<%t Cart.REMOVEALL 'Remove {name} from cart' name=$Title %>">
@@ -95,7 +95,7 @@
 			<% end_if %>
 			<tr class="gap Total">
 				<th colspan="4" scope="row"><%t Cart.TOTAL 'Total' %></th>
-				<td id="$TableTotalID"><span class="value">$Total.Nice</span> <span class="currency">$Currency</span></td>
+				<td id="$TableTotalID"><span class="value">$Total.Whole</span> <span class="currency">$Currency</span></td>
 				<% if $Editable %><td>&nbsp;</td><% end_if %>
 			</tr>
 		</tfoot>

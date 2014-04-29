@@ -48,7 +48,8 @@ class Order extends DataObject {
 	private static $has_many = array(
 		'Items' => 'OrderItem',
 		'Modifiers' => 'OrderModifier',
-		'OrderStatusLogs' => 'OrderStatusLog'
+		'OrderStatusLogs' => 'OrderStatusLog',
+		'Parcels' => 'Parcel',
 	);
 	
 	private static $defaults = array(
@@ -176,14 +177,15 @@ class Order extends DataObject {
 	function getCMSFields(){
 		$fields = FieldList::create(
 			TabSet::create('Root',
-				Tab::create('Main',_t('Order.MAINTAB','Main'))
+				Tab::create('Main',_t('Order.MAINTAB','Main')),
+				Tab::create('Parcels',_t('Order.PARCELTAB','Parcels'))
 			)
 		);
 		$fs = "<div class=\"field\">";
 		$fe = "</div>";
 		$fields->addFieldsToTab('Root.Main', array(
-			DropdownField::create('
-				Status',
+			DropdownField::create(
+				'Status',
 				_t('Order.db_Status','Status'),
 				self::get_order_status_options()
 			),
@@ -204,6 +206,14 @@ class Order extends DataObject {
 				$fs.$this->renderWith('OrderAdmin_Notes').$fe
 			)
 		));
+		$fields->addFieldsToTab('Root.Parcels', array(
+			GridFieldExtended::create(
+				'Parcels',
+				'',
+				$this->Parcels()
+			)
+		));
+
 		$this->extend('updateCMSFields',$fields);
 		$payments = $fields->fieldByName("Root.Payments.Payments")
 			->setTitle(_t('Cart.PAYMENTS','Payment(s)'));

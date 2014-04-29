@@ -1,4 +1,4 @@
-<table id="ShippingTable" class="infotable">
+<table id="ShippingTable" class="infotable table table-bordered">
 	<tr>
 		<th><%t Cart.SHIPTO 'Ship To' %></th>
 		<th><%t Cart.BILLTO 'Bill To' %></th>

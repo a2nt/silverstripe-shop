@@ -1,6 +1,6 @@
 <?php 
 class ProfileEditor extends AccountEditor {
-	public static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'EditProfileForm',
 		'ChangePasswordForm'
 	);

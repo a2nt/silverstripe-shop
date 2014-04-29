@@ -19,7 +19,7 @@
 		<% if $SubTitle %><div class="subtitle">$SubTitle</div><% end_if %>
 		<% if $Buyable.InternalItemID %><div class="sku"><%t Cart.SKU 'SKU' %>: $Buyable.InternalItemID</div><% end_if %>
 	</td>
-	<td class="unitprice">$UnitPrice.Nice</td>
+	<td class="unitprice">$UnitPrice.Whole</td>
 	<td class="quantity">$Quantity</td>
-	<td class="total">$Total.Nice</td>
+	<td class="total">$Total.Whole</td>
 </tr>

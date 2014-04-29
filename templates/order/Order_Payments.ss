@@ -1,4 +1,4 @@
-<table id="PaymentTable" class="infotable">
+<table id="PaymentTable" class="infotable table table-striped table-bordered table-hover">
 	<thead>			
 		<tr class="gap mainHeader">
 				<th colspan="10" class="left"><%t Cart.PAYMENTS 'Payment(s)' %></th>
@@ -15,7 +15,7 @@
 		<% loop Payments %>	
 			<tr>
 				<td class="price">$Created.Nice</td>
-				<td class="price">$Amount.Nice $Currency</td>
+				<td class="price">$Amount.Whole $Currency</td>
 				<td class="price">$Status</td>
 				<td class="price">$Gateway</td>
 				<td class="price">$Message.NoHTML</td>

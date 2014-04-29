@@ -43,7 +43,10 @@ class CartForm extends BootstrapForm {
 			$name = 'Item['.$item->ID.']';
 			$quantity = NumericField::create($name.'[Quantity]','Quantity',$item->Quantity);
 			$variation = false;
-			$variations = $item->Product()->Variations();
+			if(method_exists($item,'OptionField')){
+				$variation = $item->OptionField($name);
+			}
+			/*$variations = $item->Product()->Variations();
 			if($variations->exists()){
 				$variation = DropdownField::create(
 					$name.'[ProductVariationID]',
@@ -51,7 +54,7 @@ class CartForm extends BootstrapForm {
 					$variations->map('ID','Title'),
 					$item->ProductVariationID
 				);
-			}
+			}*/
 			$remove = CheckboxField::create($name.'[Remove]','Remove');
 			$editables->push($item->customise(array(
 				'QuantityField' => $quantity,
@@ -83,11 +86,14 @@ class CartForm extends BootstrapForm {
 				if(isset($fields['Quantity']) && $quantity = Convert::raw2sql($fields['Quantity'])){
 					$item->Quantity = $quantity;
 				}
-				//update variations
+				/*//update variations
 				if(isset($fields['ProductVariationID']) && $id = Convert::raw2sql($fields['ProductVariationID'])){
 					if($item->ProductVariationID != $id){
 						$item->ProductVariationID = $id;
 					}
+				}*/
+				if(method_exists($item,'setOption')){
+					$item->setOption($fields);
 				}
 				//TODO: make updates through ShoppingCart class
 				//TODO: combine with items that now match exactly

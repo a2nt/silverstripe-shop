@@ -20,7 +20,7 @@
 		</h5>
 		<% if $SubTitle %><p class="subtitle">$SubTitle</p><% end_if %>
 	</td>
-	<td class="center unitprice">$UnitPrice.Nice</td>
+	<td class="center unitprice">$UnitPrice.Whole</td>
 	<td class="center quantity">$Quantity</td>
-	<td class="right total">$Total.Nice</td>
+	<td class="right total">$Total.Whole</td>
 </tr>

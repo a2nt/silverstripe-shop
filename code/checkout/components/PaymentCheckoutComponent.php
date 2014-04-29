@@ -3,7 +3,7 @@
 class PaymentCheckoutComponent extends CheckoutComponent{
 	
 	public function getFormFields(Order $order){
-		$fields = new FieldList();
+		$fields = FieldList::create();
 		$gateways = GatewayInfo::get_supported_gateways();
 		if(count($gateways) > 1){
 			$fields->push(

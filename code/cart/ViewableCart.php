@@ -45,4 +45,11 @@ class ViewableCart extends Extension{
 	public function getCartLink(){
 		return CartPage::find_link();
 	}
+	public function getCartTotal(){
+		$order = ShoppingCart::curr();
+		if($order && $order->Items()){
+			return $order->Items()->count();
+		}
+		return 0;
+	}
 }

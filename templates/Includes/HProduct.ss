@@ -49,7 +49,7 @@
 		<% else %>
 			<% if $Price %>
 				<div class="p-price price">
-					<strong class="value">$Price.Nice</strong>
+					<strong class="value">$Price.Whole</strong>
 					<span class="currency">$Price.Currency</span>
 				</div>
 			<% end_if %>

@@ -1,18 +1,18 @@
 <tfoot>
 	<tr class="gap summary" id="SubTotal">
 		<td colspan="4" scope="row" class="threeColHeader subtotal"><%t Cart.SUBTOTAL 'Sub-total' %></td>
-		<td class="right">$SubTotal.Nice</td>
+		<td class="right">$SubTotal.Whole</td>
 	</tr>
 	<% loop $Modifiers %>
 		<% if $ShowInTable %>
 	<tr class="modifierRow $EvenOdd $FirstLast $Classes">
 		<td colspan="4" scope="row">$TableTitle</td>
-		<td class="right">$TableValue.Nice</td>
+		<td class="right">$TableValue.Whole</td>
 	</tr>
 		<% end_if %>
 	<% end_loop %>
 	<tr class="gap summary total" id="Total">
 		<td colspan="4" scope="row" class="threeColHeader total"><%t Cart.TOTAL 'Total' %></td>
-		<td class="right">$Total.Nice $Currency</td>
+		<td class="right">$Total.Whole $Currency</td>
 	</tr>
 </tfoot>

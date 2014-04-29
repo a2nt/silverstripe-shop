@@ -7,6 +7,17 @@ class PaymentForm extends CheckoutForm {
 		$this->config->setData($form->getData());
 		$order = $this->config->getOrder();
 
+		// check fedex delivery price
+		if($fedex = $order->getModifier('FedExShippingModifier')){
+			if($fedex->Amount == '0.00'){
+				$form->sessionMessage($fedex->TableTitle(),'bad');
+				return $this->controller->redirect(
+					$this->controller->Link()
+				);
+			}
+		}
+		//
+
 		// process payment if it is available
 		if(Config::inst()->get('ShopConfig','payment') == true){
 			$gateway = Checkout::get($order)->getSelectedPaymentMethod(false);
@@ -41,9 +52,12 @@ class PaymentForm extends CheckoutForm {
 			$data
 		);
 		if($response){
-			if($response->isRedirect() || $response->isSuccessful()){
-				return $response->redirect();
+			if($response->isSuccessful()){
+				return $this->controller->redirect($order->Link());
 			}
+			/*if($response->isRedirect() || $response->isSuccessful()){
+				return $response->redirect();
+			}*/
 			$form->sessionMessage($response->getMessage(),'bad');
 
 		}else{

@@ -14,7 +14,7 @@
 							<% if $SubTitle %><div class="subtitle">$SubTitle</div><% end_if %>
 						</td>
 						<td class="quantity-price">
-							<span class="quantity">$Quantity</span> <span class="times">x</span> <span class="unitprice">$UnitPrice.Nice</span>
+							<span class="quantity">$Quantity</span> <span class="times">x</span> <span class="unitprice">$UnitPrice.Whole</span>
 						</td>
 						<td>
 							<a class="remove" href="$removeallLink" title="<%t Cart.REMOVEALL 'Remove {name} from cart' name=$TableTitle %>">

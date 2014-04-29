@@ -60,33 +60,38 @@ class AccountPage extends BasicPage {
 }
 
 class AccountPage_Controller extends BasicPage_Controller {
-	
-	private static $url_segment = 'account';
-	private static $allowed_actions = array(
-		'Module',
-	);
-	private static $url_handlers = array(
-		'Module/$Module!/$Action/$ID/$OtherID' => 'Module'
-    );
 
+	private static $allowed_actions = array(
+		'EditProfileForm',
+		'ChangePasswordForm'
+	);
+	private static $url_segment = 'account';
+	
 	protected $member;
 
 	public function init() {
 		parent::init();
+
+		Compressor::compress_file('less_AccountEditor.css',array(
+			project().'/less/AccountEditor.less',
+		));
+		
 		if(!Member::currentUserID()) {
 			$messages = array(
 				'default' => '<p class="message good">'.
 					_t(
-						'AccountPage.Message',
+						'AccountPage.LOGIN',
 						'You\'ll need to login before you can access the account page.'
-						.'If you are not registered, you won\'t be able to access it until you make your first order,'
+						.' If you are not registered, you won\'t be able to access it until you make your first order,'
 						.' otherwise please enter your details below.'
 					)
 				.'</p>',
-				'logInAgain' => 'You have been logged out. If you would like to log in again, please do so below.'
+				'logInAgain' => _t(
+					'AccountPage.LOGGEDOUT',
+					'You have been logged out. If you would like to log in again, please do so below.'
+				)
 			);
-			Security::permissionFailure($this,$messages);
-			return false;
+			return Security::permissionFailure($this,$messages);
 		}
 		$this->member = Member::currentUser();
 	}
@@ -95,53 +100,34 @@ class AccountPage_Controller extends BasicPage_Controller {
 		$classes = self::get_type_classes();
 		$menu = array();
 		$menu[] = array(
-			'Link' => self::join_links(AccountPage::find_link()),
-			'Title' => _t('AccountPage.Title','Main Info'),
+			'Link' => self::join_links('profile'),
+			'Title' => _t('AccountPage.Title','Info'),
 			'Status' => (
-					!isset(Controller::curr()->urlParams['Module'])
-					&& get_class(Controller::curr()) == 'AccountPage_Controller'
+					get_class(Controller::curr()) == 'AccountPage_Controller'
+					&& !isset(Controller::curr()->urlParams['Module'])
 				)?'active':''
 		);
 		foreach($classes as $class) {
-			if(
-				(
-					isset(Controller::curr()->urlParams['Module'])
-					&& Controller::curr()->urlParams['Module'] == $class
-				)
-				|| get_class(Controller::curr()) == $class
-			){
-				$mode = 'active';
-			}else{
-				$mode = '';
+			if($class::canView()){
+				if(
+					get_class(Controller::curr()) == $class 
+					|| (
+						isset(Controller::curr()->urlParams['Module'])
+						&& Controller::curr()->urlParams['Module'] == $class
+					)
+				){
+					$mode = 'active';
+				}else{
+					$mode = '';
+				}
+				$menu[] = array(
+					'Link' => $class::StaticLink(),
+					'Title' => $class::getTitle(),
+					'Status' => $mode
+				);
 			}
-			$menu[] = array(
-				'Link' => self::join_links(AccountPage::find_link(),'Module',$class,'/'),
-				'Title' => $class::getTitle(),
-				'Status' => $mode
-			);
 		}
 		return new ArrayList($menu);
-	}
-
-	public function Module(SS_HTTPRequest $args){
-		if(!in_array(
-			$args->param('Module'),
-			$this->get_type_classes()
-		)){
-			return $this->httpError(404,'Page not found.');
-			//return $this->redirect('/');
-		}
-		$c = singleton($args->param('Module'));
-		$c->setURLParams($args);//die('aaa');
-		//$c->init();
-		return $c->render();
-	}
-
-	public function getTitle(){
-		if($this->dataRecord && $title = $this->dataRecord->Title){
-			return $title;
-		}
-		return _t('AccountPage.Title','Profile');
 	}
 	
 	public function getMember(){
@@ -177,35 +163,15 @@ class AccountPage_Controller extends BasicPage_Controller {
 		}
 		return $classes;
 	}
-	
-	public function Link($action = null,$http = true){
-		$link = $this->RelativeLink($action);
-		if($this->config()->secure_domain){
-			$s = array(
-				'http://',
-				'http://www.'
-			);
-			$r = 'https://'.$this->config()->secure_domain;
-		}else{
-			$s = '';
-			$r = '';
-		}
-		
-		return
-			str_ireplace(
-				$s,
-				$r,
-				Director::absoluteURL(
-					Controller::join_links(
-						Director::baseURL(),
-						$link
-					)
-				)
-			);
-	}
 	public function MetaTags($includeTitle = true){
-		$tags = parent::MetaTags($includeTitle);
-		$tags .= '<meta name="robots" content="noindex" />';
-		return $tags;
+		return parent::MetaTags($includeTitle)
+			.'<meta name="robots" content="noindex" />';
+	}
+	public function ChangePasswordForm(){
+		return BootstrapChangePasswordForm::create($this,'ChangePasswordForm');
+	}
+
+	public function EditProfileForm(){
+		return AccountForm::create($this,'EditProfileForm');
 	}
 }

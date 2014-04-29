@@ -120,6 +120,26 @@ class Address extends DataObject{
 		}
 
 		$this->extend('updateFormFields', $fields);
+
+		// set default values for testing
+		if(!Director::isLive()){
+			$fields->insertBefore(
+				LiteralField::create(
+					'AddressTestNote',
+					'<div class="alert alert-block">Warning! Dummy data has been added to the form for testing convenience.</div>'
+				),
+				'Anchor'
+			);
+			$fields->setValues(array(
+				'City' => 'School University',
+				'State' => 'PA',
+				'Address' =>  'Road 723',
+				'AddressLine2' => 'h.1024, ap.50',
+				'PostalCode' => '19104',
+				'Phone' => '123-456-7890',
+			));
+		}
+		//
 		return $fields;
 	}
 

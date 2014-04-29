@@ -7,7 +7,7 @@
 	<tbody>
 		<% loop PastOrders %>
 			<tr class="$Status">
-				<td>$Reference</td><td>$Created.Nice</td><td>$Items.Quantity</td><td>$Total.Nice</td><td>$Status</td><td><a class="btn btn-mini btn-primary" href="$Link"><i class="icon icon-white icon-eye-open"></i> view</a></td>
+				<td>$Reference</td><td>$Created.Nice</td><td>$Items.Quantity</td><td>$Total.Whole</td><td>$Status</td><td><a class="btn btn-mini btn-primary" href="$Link"><i class="icon icon-white icon-eye-open"></i> view</a></td>
 			</tr>
 		<% end_loop %>
 	</tbody>

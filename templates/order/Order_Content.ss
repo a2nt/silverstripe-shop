@@ -1,4 +1,4 @@
-<table id="InformationTable" class="infotable ordercontent">
+<table id="InformationTable" class="infotable ordercontent table table-striped table-bordered table-hover">
 	<colgroup class="image"/>
 	<colgroup class="product title"/>
 	<colgroup class="unitprice" />

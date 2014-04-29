@@ -99,6 +99,22 @@ class ShoppingCart{
 	 */
 	public function add(Buyable $buyable,$quantity = 1,$filter = array()){
 		$order = $this->findOrMake();
+		
+		// get options
+		if(isset($filter['options'])){
+			$pre_options = explode(':',$filter['options']);
+			$options = array();
+			foreach($pre_options as $pre_option){
+				$option = explode('.',$pre_option);
+				$options[ucwords($option[0])] = $option[1];
+			}
+			unset($pre_option);
+			unset($option);
+			unset($pre_options);
+			unset($filter['options']);
+		}
+		//
+
 		$order->extend("beforeAdd",$buyable,$quantity,$filter);
 		if(!$buyable){ 
 			return $this->error(_t("ShoppingCart.PRODUCTNOTFOUND","Product not found."));
@@ -109,6 +125,15 @@ class ShoppingCart{
 		}
 		if(!$item->_brandnew){
 			$item->Quantity += $quantity;
+			// set options
+			if(isset($options) && isset($item::$white_options)){
+				foreach($item::$white_options as $option){
+					if(isset($options[$option])){
+						$item->$option = $options[$option];
+					}
+				}
+			}
+			//
 		}else{
 			$item->Quantity = $quantity;
 		}
@@ -350,16 +375,25 @@ class ShoppingCart_Controller extends Controller{
 		return "";
 	}
 	
-	static function direct($status = true){
+	public function direct($status = true){
 		if(Director::is_ajax()){
-			return $status;
+			return json_encode(array(
+				'Message' => $this->cart->getMessage(),
+				'MessageType' => $this->cart->getMessageType(),
+				'TotalItems' => $this->cart->curr()->Items()->count(),
+				'Status' => $status
+			));
 		}
+
+		Page_Controller::setSiteWideMessage(
+			$this->cart->getMessage(),
+			$this->cart->getMessageType()
+		);
+
 		if(self::config()->direct_to_cart_page && $cartlink = CartPage::find_link()){
-			Controller::curr()->redirect($cartlink);
-			return;
+			return Controller::curr()->redirect($cartlink);
 		}else{
-			Controller::curr()->redirectBack();
-			return;
+			return Controller::curr()->redirectBack();
 		}
 	}
 	
@@ -402,34 +436,22 @@ class ShoppingCart_Controller extends Controller{
 			$quantity = (int) $request->getVar('quantity');
 			if(!$quantity) $quantity = 1;
 			$this->cart->add($product,$quantity,$request->getVars());
-			Page_Controller::setSiteWideMessage(
-				$this->cart->getMessage(),
-				$this->cart->getMessageType()
-			);
 		}
-		return self::direct();
+		return $this->direct();
 	}
 	
 	function remove($request){
 		if($product = $this->buyableFromRequest()){
 			$this->cart->remove($product,$quantity = 1,$request->getVars());
-			Page_Controller::setSiteWideMessage(
-				$this->cart->getMessage(),
-				$this->cart->getMessageType()
-			);
 		}
-		return self::direct();
+		return $this->direct();
 	}
 	
 	function removeall($request){
 		if($product = $this->buyableFromRequest()){
 			$this->cart->remove($product,null,$request->getVars());
-			Page_Controller::setSiteWideMessage(
-				$this->cart->getMessage(),
-				$this->cart->getMessageType()
-			);
 		}
-		return self::direct();
+		return $this->direct();
 	}
 	
 	function setquantity($request){
@@ -437,21 +459,13 @@ class ShoppingCart_Controller extends Controller{
 		$quantity = (int) $request->getVar('quantity');
 		if($product){
 			$this->cart->setQuantity($product,$quantity,$request->getVars());
-			Page_Controller::setSiteWideMessage(
-				$this->cart->getMessage(),
-				$this->cart->getMessageType()
-			);
 		}
-		return self::direct();
+		return $this->direct();
 	}
 	
 	function clear($request){
 		$this->cart->clear();
-		Page_Controller::setSiteWideMessage(
-			$this->cart->getMessage(),
-			$this->cart->getMessageType()
-		);
-		return self::direct();		
+		return $this->direct();	
 	}
 
 	/**

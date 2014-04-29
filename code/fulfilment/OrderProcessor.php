@@ -148,7 +148,9 @@ class OrderProcessor{
 		));
 
 		// Process payment, get the result back
-		$response = $payment->purchase($data);
+		$response = PurchaseService::create($payment)
+			->purchase($data);
+			//->setReturnUrl($this->order->Link());
 		if($response->isSuccessful()) {
 			$this->completePayment();
 		}
@@ -167,9 +169,9 @@ class OrderProcessor{
 			$this->error(_t("PaymentProcessor.CANTPAY", "Order can't be paid for."));
 			return false;
 		}
+		$currency = Config::inst()->get('ShopConfig','base_currency');
 		$payment = Payment::create()
-			->init($gateway, $this->order->TotalOutstanding(), $currency = "NZD")
-			->setReturnUrl($this->order->Link());
+			->init($gateway, $this->order->TotalOutstanding(), $currency);
 		$this->order->Payments()->add($payment);
 		return $payment;
 	}

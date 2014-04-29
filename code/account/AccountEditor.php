@@ -1,64 +1,34 @@
 <?php
-class AccountEditor extends BasicPage_Controller {
+class AccountEditor extends AccountPage_Controller {
+	
+	private static $allowed_actions = array();
 	protected $data_less_controller = true;
-	protected $member = false;
+	private static $menu_title = '';
+	
 	public function init(){
 		parent::init();
-		$this->member = Member::currentUser();
-		if(!$this->member) {
+		Compressor::compress_file('less_AccountEditor.css',array(
+			project().'/less/AccountEditor.less',
+		));
+		if(!$this->canView()){
 			$messages = array(
-				'default' => '<p class="message good">'.
+				'default' =>
 					_t(
-						'AccountPage.Message',
-						'You\'ll need to login before'
-						.' you can access the account page.'
-						.' If you are not registered, you won\'t'
-						.' be able to access it until you make your first order,'
-						.' otherwise please enter your details below.'
-					)
-				.'</p>',
-				'logInAgain' => 'You have been logged out.'
-				.' If you would like to log in again, please do so below.'
+						'AccountPage.LOGIN',
+						'You don\'t have access to this area.'
+					),
 			);
 			return Security::permissionFailure($this,$messages);
-		}
-		self::require_styled_type();
-		self::require_js_type();
-	}
-
-	public static function require_styled_type($type = null){
-		if(!$type){
-			$type = get_called_class();
-		}
-		Compressor::compress_file('less_Profile'.$type.'.css',array(
-			BASKET_PATH.'/less/Profile'.$type.'.less',
-			//self::$themedir.'/less/Profile'.$type.'.less'
-		));
-		if(method_exists($type,'require_styled_type')){
-			$type::require_styled_type();
-		}
-	}
-
-	public static function require_js_type($type = null){
-		if(!$type){
-			$type = get_called_class();
-		}
-		Compressor::compress_file('less_Profile'.$type.'.js',array(
-			BASKET_PATH.'/js/Profile'.$type.'.js',
-			//self::$themedir.'/js/Profile'.$type.'.js'
-		));
-		if(method_exists($type,'require_js_type')){
-			$type::require_js_type();
 		}
 	}
 
 	public static function getTitle(){
-		//$title = (isset(self::$title))?
-			//self::$title
-			//:preg_replace('!([A-Z])!',' $1',get_called_class());
+		$class = get_called_class();
 		return _t(
-			get_called_class().'.Title',
-			preg_replace('!([A-Z])!',' $1',get_called_class())
+			$class.'.TITLE',
+			Config::inst()->get($class,'menu_title')
+				?Config::inst()->get($class,'menu_title')
+				:preg_replace('!([A-Z])!',' $1',$class)
 		);
 	}
 
@@ -66,8 +36,21 @@ class AccountEditor extends BasicPage_Controller {
 		return _t(get_called_class().'.Content');
 	}
 
+	public function SubLink(){
+		$ar = array($this->Link());
+		return call_user_func_array('Controller::join_links',array_merge($ar,func_get_args()));
+	}
+
 	public static function AccountMenu() {
 		return AccountPage_Controller::AccountMenu();
+	}
+
+	public static function canView(){
+		return Member::currentUserID()?true:false;
+	}
+	
+	public static function StaticLink() {
+		return self::join_links(get_called_class());//self::join_links('profile','Module',get_called_class());
 	}
 
 	public function Layout(){
@@ -76,43 +59,23 @@ class AccountEditor extends BasicPage_Controller {
 			if(!SSViewer::hasTemplate($this->template)){
 				$this->template = 'AccountPage';
 			}
+			if(
+				$this->request->param('Action')
+				&& SSViewer::hasTemplate($this->template.'_'.$this->request->param('Action'))
+			){
+				$this->template = $this->template.'_'.$this->request->param('Action');
+			}
 		}
-		$this->extend('updateTemplate',$this->template);
 		return $this->renderWith($this->template);
 	}
 
 	public function MetaTags($includeTitle = true){
 		$tags = parent::MetaTags($includeTitle);
 		$tags = preg_replace(
-			'!<title>(.[^<]+)</title>!i',
+			'!<title>([^<]*)</title>!i',
 			'<title>'.self::getTitle().' $1</title>',
 			$tags
 		).'<meta name="robots" content="noindex" />';
 		return $tags;
-	}
-	public function Link($action = null,$http = true){
-		$link = $this->RelativeLink($action);
-		if($this->config()->secure_domain){
-			$s = array(
-				'http://',
-				'http://www.'
-			);
-			$r = 'https://'.$this->config()->secure_domain;
-		}else{
-			$s = '';
-			$r = '';
-		}
-		
-		return
-			str_ireplace(
-				$s,
-				$r,
-				Director::absoluteURL(
-					Controller::join_links(
-						Director::baseURL(),
-						$link
-					)
-				)
-			);
 	}
 }

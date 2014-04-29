@@ -1,16 +1,16 @@
-<% require themedCSS(order) %>
 <div id="OrderInformation">
 	<% include Order_Address %>
+	<% include Order_Parcels %>
 	<% include Order_Content %>
 	<% if $Total %>
 		<% if $Payments %>
 			<% include Order_Payments %>
 		<% end_if %>
-		<table id="OutstandingTable" class="infotable">
+		<table id="OutstandingTable" class="infotable table table-bordered">
 			<tbody>
 				<tr class="gap summary" id="Outstanding">
 					<th colspan="4" scope="row" class="threeColHeader"><strong><%t Cart.TOTALOUTSTANDING 'Total outstanding' %></strong></th>
-					<td class="right"><strong>$TotalOutstanding.Nice </strong></td>
+					<td class="right"><strong>$TotalOutstanding.Whole </strong></td>
 				</tr>
 			</tbody>
 		</table>

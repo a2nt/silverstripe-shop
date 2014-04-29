@@ -61,16 +61,15 @@ class OrderManipulation extends Extension{
 	 * Get all orders for current member / session.
 	 * @return DataObjectSet of Orders
 	 */
-	public function allorders() {
-		$filters = array(
+	public function AllOrders() {
+		/*$filters = array(
 			'ID' => -1 //ensures no results are returned
-		);
+		);*/
 		if($sessids = self::get_session_order_ids()){
 			$filters['ID'] = $sessids;
 		}
-		if($memberid = Member::currentUserID()){
-			$filters['MemberID'] = $sessids;
-		}
+
+		$filters['MemberID'] = Member::currentUserID();
 
 		return Order::get()->filterAny($filters);
 	}

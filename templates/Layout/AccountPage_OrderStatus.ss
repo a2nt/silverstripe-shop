@@ -14,7 +14,7 @@
 		<tr>
 			<td><a href="/OrderStatus/order/{$ID}/" rel="nofollow">$Reference</a></td>
 			<td>{$Created.Nice}</td>
-			<td>$TotalOutstanding.Nice</td>
+			<td>$TotalOutstanding.Whole</td>
 		</tr>
 		<% end_loop %>
 		</tbody>

@@ -158,13 +158,13 @@
 													<% if ShowInTable %>
 												<tr class="modifierRow $EvenOdd $FirstLast $Classes">
 													<td colspan="3">$TableTitle</td>
-													<td>$TableValue.Nice</td>
+													<td>$TableValue.Whole</td>
 												</tr>
 													<% end_if %>
 												<% end_loop %>
 												<tr>
 													<th colspan="3">Grand Total</th>
-													<td>$Total.Nice $Currency</td>
+													<td>$Total.Whole $Currency</td>
 												</tr>
 											</tfoot>
 										</table>
